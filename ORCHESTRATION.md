@@ -20,6 +20,19 @@ model → task-script (JSON) → scribe.execute(ops, protocol_size) → gated wr
 `s` = sandbox only (no code, no delete) … `xl` = full. A smart-but-disobedient
 model is pinned to `s` — physically contained.
 
+**Quick reference — which size for which file type:**
+
+| File type | Min size | Why |
+|-----------|----------|-----|
+| `.txt`, `.json`, `.csv`, data | `s` | plain data, no code gate |
+| `.md`, `.yaml`, `.toml` | `m` | config/docs, not executable |
+| `.py`, `.js`, `.ts`, `.php`, `.cpp`, `.cs` | `l` | executable code |
+| `.html`, `.htm`, `.svg`, `.svgz` | `l` | markup injection surface (`<script>`, event handlers) |
+| delete any file | `xl` | destructive — always requires top grade |
+
+For a **trusted caller** (you, a cloud AI): pass `protocol_size=None` to skip
+capability gating entirely — only content hygiene still runs.
+
 ## Two planes — read this first (common confusion)
 
 HDS has **two distinct surfaces**. Conflating them is the #1 mistake:
