@@ -1,0 +1,1406 @@
+{
+  "version": "1.1.0",
+  "generated": "2026-06-15T07:43:38.768229",
+  "total_modules": 40,
+  "total_lines": 12240,
+  "modules": [
+    {
+      "file": "agent.py",
+      "doc": "agent.py",
+      "lines": 1120,
+      "symbols": [
+        {
+          "name": "HDSAgent",
+          "kind": "class",
+          "doc": "HDS NUCLEUS",
+          "lines": 989,
+          "methods": [
+            "__init__()",
+            "validate_script(): Validate Python script with enhanced sandboxing.",
+            "error_handler(): Context manager for error handling.",
+            "log(): Centralized logging.",
+            "scan_tasks(): Scan active tasks.",
+            "execute_task_script(): Execute Python task script with enhanced error handling.",
+            "archive_completed_task(): Archive completed task with verification.",
+            "check_file_size_limits(): Check R-01: SIZE_LIMIT for all allowed workspaces.",
+            "write_to_production(): Controlled write to registered project files.",
+            "cycle(): One cycle of agent operation.",
+            "cleanup_archive_for_release(): Clean archive from development traces when building release.",
+            "run(): Start agent execution.",
+            "stop(): Stop the agent.",
+            "health_check(): Comprehensive system health check."
+          ]
+        },
+        {
+          "name": "main",
+          "kind": "function",
+          "doc": "Entry point.",
+          "lines": 34
+        }
+      ]
+    },
+    {
+      "file": "ai_experience.py",
+      "doc": "ai_experience.py",
+      "lines": 186,
+      "symbols": [
+        {
+          "name": "AIExperienceModule",
+          "kind": "class",
+          "doc": "AI Retrospective & Self-Learning module.",
+          "lines": 162,
+          "methods": [
+            "__init__()",
+            "register_failure(): Register a failed attempt.",
+            "get_context_for_prompt(): Extract most relevant lessons for injection into system prompt.",
+            "get_stats(): Returns AI experience statistics.",
+            "export_lessons(): Export all lessons as text for analysis."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "aivc_controller.py",
+      "doc": "aivc_controller.py",
+      "lines": 737,
+      "symbols": [
+        {
+          "name": "ActionType",
+          "kind": "class",
+          "doc": "",
+          "lines": 10
+        },
+        {
+          "name": "Observation",
+          "kind": "class",
+          "doc": "What the agent sees right now.",
+          "lines": 12
+        },
+        {
+          "name": "Action",
+          "kind": "class",
+          "doc": "What the agent decides to do.",
+          "lines": 9
+        },
+        {
+          "name": "StepResult",
+          "kind": "class",
+          "doc": "Outcome of one AIVC iteration.",
+          "lines": 8
+        },
+        {
+          "name": "AIVCController",
+          "kind": "class",
+          "doc": "Autonomous AI Vision & Control loop.",
+          "lines": 491,
+          "methods": [
+            "__init__()",
+            "execute_goal(): Execute a high-level goal autonomously."
+          ]
+        },
+        {
+          "name": "make_lmstudio_caller",
+          "kind": "function",
+          "doc": "Create AI caller for LM Studio. Handles thinking-models (Qwen3.5) via reasoning_content fallback.",
+          "lines": 25
+        },
+        {
+          "name": "make_ollama_caller",
+          "kind": "function",
+          "doc": "Create AI caller for Ollama.",
+          "lines": 20
+        },
+        {
+          "name": "make_anthropic_caller",
+          "kind": "function",
+          "doc": "Create AI caller for Anthropic Claude API.",
+          "lines": 24
+        },
+        {
+          "name": "make_openai_caller",
+          "kind": "function",
+          "doc": "Create AI caller for OpenAI.",
+          "lines": 22
+        }
+      ]
+    },
+    {
+      "file": "ast_validator.py",
+      "doc": "ast_validator.py",
+      "lines": 173,
+      "symbols": [
+        {
+          "name": "SecurityLevel",
+          "kind": "class",
+          "doc": "Code security levels.",
+          "lines": 6
+        },
+        {
+          "name": "ASTValidator",
+          "kind": "class",
+          "doc": "Checks Python code for dangerous constructs via AST.",
+          "lines": 147,
+          "methods": [
+            "__init__()",
+            "validate(): Validate code for security."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "auto_decompose.py",
+      "doc": "auto_decompose.py",
+      "lines": 374,
+      "symbols": [
+        {
+          "name": "ExtractionResult",
+          "kind": "class",
+          "doc": "Result of extracting a structure from a file.",
+          "lines": 7
+        },
+        {
+          "name": "DecomposeReport",
+          "kind": "class",
+          "doc": "Full report of a decomposition operation.",
+          "lines": 9
+        },
+        {
+          "name": "rollback",
+          "kind": "function",
+          "doc": "Rollback a file to its most recent backup.",
+          "lines": 26
+        },
+        {
+          "name": "analyze_file",
+          "kind": "function",
+          "doc": "Analyze a Python file and find structures exceeding max_lines.",
+          "lines": 29
+        },
+        {
+          "name": "decompose_python_file",
+          "kind": "function",
+          "doc": "Automatically split large classes/functions into separate module files.",
+          "lines": 154
+        },
+        {
+          "name": "check_and_decompose",
+          "kind": "function",
+          "doc": "Integration point for ProtocolEnforcer.",
+          "lines": 32
+        }
+      ]
+    },
+    {
+      "file": "browser_daemon.py",
+      "doc": "browser_daemon.py",
+      "lines": 51,
+      "symbols": []
+    },
+    {
+      "file": "browser_daemon_real.py",
+      "doc": "browser_daemon_real.py",
+      "lines": 286,
+      "symbols": [
+        {
+          "name": "init_browser",
+          "kind": "function",
+          "doc": "Initialize browser (lazy loading).",
+          "lines": 13
+        },
+        {
+          "name": "get_browser_context",
+          "kind": "function",
+          "doc": "Get or create browser context.",
+          "lines": 6
+        },
+        {
+          "name": "RealBrowserDaemonServer",
+          "kind": "class",
+          "doc": "Real Browser Daemon using Playwright for actual web automation.",
+          "lines": 214,
+          "methods": [
+            "__init__()",
+            "execute_task(): Dispatch task to appropriate handler."
+          ]
+        },
+        {
+          "name": "run_browser_daemon_real",
+          "kind": "function",
+          "doc": "Start real browser daemon.",
+          "lines": 5
+        }
+      ]
+    },
+    {
+      "file": "browser_utils.py",
+      "doc": "browser_utils.py",
+      "lines": 122,
+      "symbols": [
+        {
+          "name": "HTMLToMarkdownParser",
+          "kind": "class",
+          "doc": "Convert HTML to markdown format.",
+          "lines": 50,
+          "methods": [
+            "__init__()",
+            "handle_starttag()",
+            "handle_endtag()",
+            "handle_data()",
+            "get_markdown()"
+          ]
+        },
+        {
+          "name": "BrowserUtils",
+          "kind": "class",
+          "doc": "Browser automation utilities.",
+          "lines": 55,
+          "methods": [
+            "html_to_markdown(): Convert HTML to markdown.",
+            "estimate_tokens(): Estimate token count (rough approximation).",
+            "calculate_savings(): Calculate token savings from HTML to markdown conversion.",
+            "clean_selector(): Validate and clean CSS selector.",
+            "extract_domain(): Extract domain from URL."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "build_certify.py",
+      "doc": "build_certify.py",
+      "lines": 487,
+      "symbols": [
+        {
+          "name": "BuildStep",
+          "kind": "class",
+          "doc": "A single step in the build pipeline.",
+          "lines": 7
+        },
+        {
+          "name": "BuildReport",
+          "kind": "class",
+          "doc": "Full build pipeline report.",
+          "lines": 11
+        },
+        {
+          "name": "run_cmd",
+          "kind": "function",
+          "doc": "Execute a shell command with logging.",
+          "lines": 23
+        },
+        {
+          "name": "BuildPipeline",
+          "kind": "class",
+          "doc": "Automated build and certification pipeline for HDS components.",
+          "lines": 345,
+          "methods": [
+            "__init__()",
+            "validate(): Run pre-build validation: syntax check + tests.",
+            "package_pyinstaller(): Package with PyInstaller (creates standalone executable).",
+            "package_zipapp(): Package as a Python zipapp (.pyz) — no external tools needed.",
+            "package_zip(): Create a simple ZIP distribution.",
+            "sign_macos(): Sign macOS app with codesign + optional notarization.",
+            "sign_windows(): Sign Windows EXE with signtool.",
+            "create_dmg(): Create macOS DMG disk image.",
+            "run(): Run the full build pipeline."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "canary_tests.py",
+      "doc": "canary_tests.py",
+      "lines": 303,
+      "symbols": [
+        {
+          "name": "CanaryResult",
+          "kind": "class",
+          "doc": "Result of a single canary test.",
+          "lines": 9
+        },
+        {
+          "name": "CanaryTestRunner",
+          "kind": "class",
+          "doc": "Runs canary tests and tracks results over time.",
+          "lines": 153,
+          "methods": [
+            "__init__()",
+            "run_canary(): Run a specific canary test.",
+            "run_random_canary(): Run a random canary test. Good for embedding between real tasks.",
+            "run_all_canaries(): Run all canary tests. Mini-diagnostic.",
+            "get_health(): Get overall model health from canary results.",
+            "save_log(): Save canary results to file."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "conductor.py",
+      "doc": "conductor.py",
+      "lines": 285,
+      "symbols": [
+        {
+          "name": "TaskSpec",
+          "kind": "class",
+          "doc": "A task specification for the conductor.",
+          "lines": 12
+        },
+        {
+          "name": "Conductor",
+          "kind": "class",
+          "doc": "Orchestrates task execution using a SINGLE model with different protocol contexts.",
+          "lines": 212,
+          "methods": [
+            "__init__()",
+            "estimate_complexity(): Estimate task complexity from description (1-10).",
+            "assign_protocol_size(): Determine which protocol size context to use for a task.",
+            "add_task(): Add a task to the queue.",
+            "get_execution_order(): Sort tasks by dependencies and complexity (high first).",
+            "build_task_prompt(): Build the full prompt for executing a task with appropriate protocol context.",
+            "execute_task(): Execute a single task using the AI with appropriate protocol context.",
+            "execute_all(): Execute all queued tasks in dependency order.",
+            "get_status(): Get current conductor status."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "cost_router.py",
+      "doc": "cost_router.py",
+      "lines": 251,
+      "symbols": [
+        {
+          "name": "ModelCost",
+          "kind": "class",
+          "doc": "Cost profile for a model.",
+          "lines": 15,
+          "methods": [
+            "cost_score(): Lower is cheaper. Combines RAM + speed penalty."
+          ]
+        },
+        {
+          "name": "CostRouter",
+          "kind": "class",
+          "doc": "Routes tasks to the cheapest model that can handle them.",
+          "lines": 154,
+          "methods": [
+            "__init__(): Args:",
+            "minimum_size_for_complexity(): Determine minimum protocol size needed for given complexity.",
+            "recommend(): Recommend the cheapest model that can handle the task.",
+            "get_routing_table(): Generate a full routing table showing which model handles which complexity.",
+            "get_savings_report(): Calculate potential savings from cost routing vs always using the biggest model."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "degradation_detector.py",
+      "doc": "degradation_detector.py",
+      "lines": 176,
+      "symbols": [
+        {
+          "name": "QualitySnapshot",
+          "kind": "class",
+          "doc": "A snapshot of model quality at a point in time.",
+          "lines": 20,
+          "methods": [
+            "compute_score(): Compute overall quality score."
+          ]
+        },
+        {
+          "name": "DegradationDetector",
+          "kind": "class",
+          "doc": "Monitors model quality over a session.",
+          "lines": 108,
+          "methods": [
+            "__init__(): Args:",
+            "record(): Record a quality observation.",
+            "current_quality(): Average quality over recent window.",
+            "is_degrading(): Check if model quality has dropped below threshold from baseline.",
+            "get_recommendation(): Get recommendation based on current degradation state.",
+            "get_report(): Full degradation report."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "doc_daemon.py",
+      "doc": "doc_daemon.py",
+      "lines": 431,
+      "symbols": [
+        {
+          "name": "DocExtractor",
+          "kind": "class",
+          "doc": "Extract text from various document formats.",
+          "lines": 129,
+          "methods": [
+            "extract(): Extract text from file based on extension."
+          ]
+        },
+        {
+          "name": "DocChunker",
+          "kind": "class",
+          "doc": "Split documents into AI-friendly chunks.",
+          "lines": 36,
+          "methods": [
+            "chunk(): Split text into chunks respecting paragraph boundaries."
+          ]
+        },
+        {
+          "name": "DocDaemonServer",
+          "kind": "class",
+          "doc": "Document processing daemon for HDS.",
+          "lines": 215,
+          "methods": [
+            "__init__()",
+            "execute_task(): Dispatch document task."
+          ]
+        },
+        {
+          "name": "run_doc_daemon",
+          "kind": "function",
+          "doc": "Start document daemon.",
+          "lines": 5
+        }
+      ]
+    },
+    {
+      "file": "fallback_model_chain.py",
+      "doc": "fallback_model_chain.py",
+      "lines": 186,
+      "symbols": [
+        {
+          "name": "ModelProvider",
+          "kind": "class",
+          "doc": "Available model providers.",
+          "lines": 5
+        },
+        {
+          "name": "FallbackModelChain",
+          "kind": "class",
+          "doc": "Model chain with automatic fallback.",
+          "lines": 160,
+          "methods": [
+            "__init__()",
+            "query(): Execute query with automatic fallback.",
+            "get_health_status(): Returns model chain health status.",
+            "export_stats(): Export statistics."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "hibernation_daemon.py",
+      "doc": "hibernation_daemon.py",
+      "lines": 208,
+      "symbols": [
+        {
+          "name": "TaskStatus",
+          "kind": "class",
+          "doc": "Background task states.",
+          "lines": 7
+        },
+        {
+          "name": "HibernationDaemon",
+          "kind": "class",
+          "doc": "Executes long-running tasks in a background thread.",
+          "lines": 177,
+          "methods": [
+            "__init__()",
+            "spawn_task(): Launches task in a background thread.",
+            "check_status(): Check task status.",
+            "cancel_task(): Cancel task (if not already running).",
+            "get_all_tasks(): Returns all tasks.",
+            "cleanup_completed(): Remove completed tasks older than 1 hour.",
+            "export_report(): Export report on background tasks."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "knowledge_gatekeeper.py",
+      "doc": "knowledge_gatekeeper.py",
+      "lines": 183,
+      "symbols": [
+        {
+          "name": "KnowledgeGatekeeper",
+          "kind": "class",
+          "doc": "Zero-Trust Immutable Context Provider.",
+          "lines": 159,
+          "methods": [
+            "__init__()",
+            "install_immutable_rule(): Admin places an immutable rule (read-only).",
+            "fetch_rules_for_ai(): The ONLY way AI can access core rules.",
+            "intercept_write_request(): Intercept AI attempt to write to protected paths.",
+            "verify_core_integrity(): Daily core integrity check."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "microkernel_ipc.py",
+      "doc": "microkernel_ipc.py",
+      "lines": 195,
+      "symbols": [
+        {
+          "name": "DaemonType",
+          "kind": "class",
+          "doc": "Microkernel daemon types.",
+          "lines": 5
+        },
+        {
+          "name": "MicrokernelIPCClient",
+          "kind": "class",
+          "doc": "IPC client for communicating with daemons.",
+          "lines": 83,
+          "methods": [
+            "__init__(): daemon_config: {\"vision\": \"http://localhost:9001\", \"browser\": \"http://localhost:",
+            "send_task(): Sends a task to a daemon.",
+            "health_check(): Checks the status of all daemons.",
+            "get_daemon_stats(): Retrieves daemon performance statistics."
+          ]
+        },
+        {
+          "name": "MicrokernelIPCServer",
+          "kind": "class",
+          "doc": "Base server for a daemon.",
+          "lines": 80,
+          "methods": [
+            "__init__()",
+            "execute_task(): Override in subclass.",
+            "get_stats(): Daemon statistics.",
+            "start(): Starts the daemon HTTP server."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "model_router.py",
+      "doc": "model_router.py",
+      "lines": 457,
+      "symbols": [
+        {
+          "name": "ProtocolSize",
+          "kind": "class",
+          "doc": "HDS protocol size.",
+          "lines": 6
+        },
+        {
+          "name": "ModelProfile",
+          "kind": "class",
+          "doc": "Full model profile.",
+          "lines": 17
+        },
+        {
+          "name": "classify_model",
+          "kind": "function",
+          "doc": "Static classification by model name.",
+          "lines": 17
+        },
+        {
+          "name": "get_model_profile",
+          "kind": "function",
+          "doc": "Get full model profile.",
+          "lines": 11
+        },
+        {
+          "name": "get_protocol_path",
+          "kind": "function",
+          "doc": "Get protocol file path for model.",
+          "lines": 4
+        },
+        {
+          "name": "adapt_task",
+          "kind": "function",
+          "doc": "Adapt a universal task to the model's protocol size.",
+          "lines": 31
+        },
+        {
+          "name": "get_boot_prompt",
+          "kind": "function",
+          "doc": "Generate boot prompt for the model.",
+          "lines": 38
+        }
+      ]
+    },
+    {
+      "file": "orchestrator_index.py",
+      "doc": "orchestrator_index.py",
+      "lines": 288,
+      "symbols": [
+        {
+          "name": "SymbolInfo",
+          "kind": "class",
+          "doc": "Info about a class or function.",
+          "lines": 8
+        },
+        {
+          "name": "ModuleInfo",
+          "kind": "class",
+          "doc": "Info about a Python module.",
+          "lines": 7
+        },
+        {
+          "name": "scan_module",
+          "kind": "function",
+          "doc": "Extract module structure from a Python file using AST.",
+          "lines": 83
+        },
+        {
+          "name": "build_index",
+          "kind": "function",
+          "doc": "Scan all .py files in agent/ and build the orchestrator index.",
+          "lines": 45
+        },
+        {
+          "name": "save_index",
+          "kind": "function",
+          "doc": "Save index to JSON file.",
+          "lines": 6
+        },
+        {
+          "name": "rebuild_index",
+          "kind": "function",
+          "doc": "Rebuild and save the orchestrator index. Call after any file changes.",
+          "lines": 5
+        },
+        {
+          "name": "get_index",
+          "kind": "function",
+          "doc": "Load the cached orchestrator index.",
+          "lines": 7
+        },
+        {
+          "name": "get_module_summary",
+          "kind": "function",
+          "doc": "Get a human-readable summary of one module.",
+          "lines": 20
+        },
+        {
+          "name": "print_compact_index",
+          "kind": "function",
+          "doc": "Print a compact human-readable index to stdout.",
+          "lines": 20
+        }
+      ]
+    },
+    {
+      "file": "port_checker.py",
+      "doc": "HDS Port Checker - System port availability verification",
+      "lines": 287,
+      "symbols": [
+        {
+          "name": "PortChecker",
+          "kind": "class",
+          "doc": "System port availability verification across platforms",
+          "lines": 228,
+          "methods": [
+            "is_port_available(): Check if port is available",
+            "get_process_info(): Get detailed information about process using the port",
+            "find_available_ports(): Find N available ports starting from start_port",
+            "print_port_status(): Print formatted port status report",
+            "kill_process_on_port(): Terminate process on port (when restart needed)"
+          ]
+        },
+        {
+          "name": "main",
+          "kind": "function",
+          "doc": "CLI for port_checker testing",
+          "lines": 37
+        }
+      ]
+    },
+    {
+      "file": "port_registry.py",
+      "doc": "HDS Port Registry - Dynamic port allocation management",
+      "lines": 262,
+      "symbols": [
+        {
+          "name": "PortRegistry",
+          "kind": "class",
+          "doc": "Port registration system for dynamic port distribution",
+          "lines": 184,
+          "methods": [
+            "init_registry_dir(): Initialize registry directory",
+            "load_registry(): Load port registry from file",
+            "save_registry(): Save port registry to file",
+            "allocate_instance(): Allocate 3 unique ports with system verification",
+            "get_instance(): Get instance config by ID",
+            "list_instances(): List all active instances",
+            "cleanup_instance(): Remove instance from registry"
+          ]
+        },
+        {
+          "name": "main",
+          "kind": "function",
+          "doc": "CLI for port management",
+          "lines": 55
+        }
+      ]
+    },
+    {
+      "file": "progressive_trust.py",
+      "doc": "progressive_trust.py",
+      "lines": 239,
+      "symbols": [
+        {
+          "name": "TrustRecord",
+          "kind": "class",
+          "doc": "A record of task performance.",
+          "lines": 8
+        },
+        {
+          "name": "ProgressiveTrust",
+          "kind": "class",
+          "doc": "Manages dynamic trust levels for a model.",
+          "lines": 168,
+          "methods": [
+            "__init__(): Args:",
+            "record_result(): Record task result and check for promotion/demotion.",
+            "get_status(): Current trust status.",
+            "save_log(): Save trust history to file."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "protocol_diagnostic.py",
+      "doc": "protocol_diagnostic.py",
+      "lines": 507,
+      "symbols": [
+        {
+          "name": "ProtocolSize",
+          "kind": "class",
+          "doc": "",
+          "lines": 5
+        },
+        {
+          "name": "TestResult",
+          "kind": "class",
+          "doc": "Result of a single test.",
+          "lines": 8
+        },
+        {
+          "name": "DiagnosticReport",
+          "kind": "class",
+          "doc": "Full diagnostic report.",
+          "lines": 10
+        },
+        {
+          "name": "score_test_1",
+          "kind": "function",
+          "doc": "Context Retention: check for 'ё' character.",
+          "lines": 18
+        },
+        {
+          "name": "score_test_2",
+          "kind": "function",
+          "doc": "Instruction Boundary: check for extraneous elements.",
+          "lines": 29
+        },
+        {
+          "name": "score_test_3",
+          "kind": "function",
+          "doc": "Structured Output: JSON cleanliness.",
+          "lines": 35
+        },
+        {
+          "name": "score_test_4",
+          "kind": "function",
+          "doc": "Self-Awareness: ability to say 'I don't know'.",
+          "lines": 32
+        },
+        {
+          "name": "score_test_5",
+          "kind": "function",
+          "doc": "Multi-Step Planning: understanding dependencies.",
+          "lines": 35
+        },
+        {
+          "name": "score_test_6",
+          "kind": "function",
+          "doc": "Error Recovery: adequate reaction.",
+          "lines": 24
+        },
+        {
+          "name": "run_diagnostic",
+          "kind": "function",
+          "doc": "Run full model diagnostic.",
+          "lines": 69
+        },
+        {
+          "name": "save_report",
+          "kind": "function",
+          "doc": "Save diagnostic report as JSON.",
+          "lines": 31
+        }
+      ]
+    },
+    {
+      "file": "protocol_enforcer.py",
+      "doc": "protocol_enforcer.py",
+      "lines": 447,
+      "symbols": [
+        {
+          "name": "ProtocolEnforcer",
+          "kind": "class",
+          "doc": "Runtime enforcement middleware for HDS.",
+          "lines": 252,
+          "methods": [
+            "__init__(): Initialize the enforcer for a specific model.",
+            "check_action(): Check an action by type.",
+            "check_file_access(): Check file access permissions.",
+            "check_task_creation(): Check task creation permissions.",
+            "check_lines_changed(): Check the number of changed lines.",
+            "check_files_accessed(): Check the number of files accessed in a session.",
+            "log_violation(): Log a protocol violation.",
+            "get_violations(): Returns the list of violations for the current session.",
+            "get_status(): Current enforcer status."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "scribe.py",
+      "doc": "scribe.py",
+      "lines": 132,
+      "symbols": [
+        {
+          "name": "ScribeError",
+          "kind": "class",
+          "doc": "Raised when a task-script violates an invariant.",
+          "lines": 2
+        },
+        {
+          "name": "execute",
+          "kind": "function",
+          "doc": "Execute a task-script (single op dict or list of ops). Raises on violation.",
+          "lines": 16
+        },
+        {
+          "name": "main",
+          "kind": "function",
+          "doc": "",
+          "lines": 20
+        }
+      ]
+    },
+    {
+      "file": "shadow_verifier.py",
+      "doc": "shadow_verifier.py",
+      "lines": 262,
+      "symbols": [
+        {
+          "name": "VerificationResult",
+          "kind": "class",
+          "doc": "Result of shadow verification.",
+          "lines": 9
+        },
+        {
+          "name": "ShadowVerifier",
+          "kind": "class",
+          "doc": "Silently verifies task results using higher protocol context.",
+          "lines": 196,
+          "methods": [
+            "__init__()",
+            "should_verify(): Determine if a task needs shadow verification.",
+            "verify(): Verify a task result using higher protocol context.",
+            "get_stats(): Get verification statistics."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "task_yaml_support.py",
+      "doc": "",
+      "lines": 112,
+      "symbols": [
+        {
+          "name": "YAMLTaskSupportMixin",
+          "kind": "class",
+          "doc": "Adds YAML task support to HDSAgent.",
+          "lines": 103,
+          "methods": [
+            "scan_yaml_tasks(): Scan active YAML tasks.",
+            "execute_yaml_task(): Execute a YAML task."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "token_wallet.py",
+      "doc": "token_wallet.py",
+      "lines": 175,
+      "symbols": [
+        {
+          "name": "TokenWallet",
+          "kind": "class",
+          "doc": "AI request cost telemetry.",
+          "lines": 154,
+          "methods": [
+            "__init__()",
+            "log_usage(): Records token spending.",
+            "get_stats(): Returns usage statistics.",
+            "get_daily_cost(): Returns current day spending (USD).",
+            "export_report(): Export spending report."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "universal_ai_interface.py",
+      "doc": "universal_ai_interface.py",
+      "lines": 742,
+      "symbols": [
+        {
+          "name": "AIFramework",
+          "kind": "class",
+          "doc": "Supported AI frameworks.",
+          "lines": 9
+        },
+        {
+          "name": "AIRequestType",
+          "kind": "class",
+          "doc": "Types of AI requests.",
+          "lines": 8
+        },
+        {
+          "name": "AIRequest",
+          "kind": "class",
+          "doc": "AI request structure.",
+          "lines": 11
+        },
+        {
+          "name": "AIResponse",
+          "kind": "class",
+          "doc": "AI response structure.",
+          "lines": 9
+        },
+        {
+          "name": "AIProvider",
+          "kind": "class",
+          "doc": "Abstract base class for AI providers.",
+          "lines": 66,
+          "methods": [
+            "__init__()",
+            "generate_response(): Generate AI response.",
+            "validate_config(): Validate provider configuration.",
+            "get_capabilities(): Get supported capabilities.",
+            "cache_response(): Cache response for reuse.",
+            "get_cached_response(): Get cached response for request."
+          ]
+        },
+        {
+          "name": "OpenAIProvider",
+          "kind": "class",
+          "doc": "OpenAI provider implementation.",
+          "lines": 55,
+          "methods": [
+            "__init__()",
+            "validate_config(): Validate OpenAI configuration.",
+            "get_capabilities(): Get OpenAI capabilities.",
+            "generate_response(): Generate response using OpenAI."
+          ]
+        },
+        {
+          "name": "LocalAIProvider",
+          "kind": "class",
+          "doc": "Local AI provider implementation - REAL MODEL CALLS via Ollama/LMS.",
+          "lines": 105,
+          "methods": [
+            "__init__()",
+            "validate_config(): Validate local AI configuration.",
+            "get_capabilities(): Get local AI capabilities.",
+            "generate_response(): Generate REAL response using local model via Ollama or LM Studio."
+          ]
+        },
+        {
+          "name": "OllamaProvider",
+          "kind": "class",
+          "doc": "Ollama local AI provider - REAL CALLS.",
+          "lines": 53,
+          "methods": [
+            "__init__()",
+            "validate_config()",
+            "get_capabilities()",
+            "generate_response()"
+          ]
+        },
+        {
+          "name": "LMSProvider",
+          "kind": "class",
+          "doc": "LM Studio (LMS) local AI provider - REAL CALLS.",
+          "lines": 52,
+          "methods": [
+            "__init__()",
+            "validate_config()",
+            "get_capabilities()",
+            "generate_response()"
+          ]
+        },
+        {
+          "name": "GoogleGeminiProvider",
+          "kind": "class",
+          "doc": "Google Gemini AI provider.",
+          "lines": 21,
+          "methods": [
+            "__init__()",
+            "validate_config()",
+            "get_capabilities()",
+            "generate_response()"
+          ]
+        },
+        {
+          "name": "HDSUniversalAIInterface",
+          "kind": "class",
+          "doc": "Universal AI interface for HDS6.",
+          "lines": 307,
+          "methods": [
+            "__init__()",
+            "load_configuration(): Load AI provider configuration.",
+            "process_request(): Process AI request with intelligent routing.",
+            "get_interface_stats(): Get interface statistics.",
+            "get_provider_status(): Get provider status.",
+            "create_request(): Create standardized AI request."
+          ]
+        },
+        {
+          "name": "get_ai_interface",
+          "kind": "function",
+          "doc": "Get global AI interface instance.",
+          "lines": 9
+        }
+      ]
+    },
+    {
+      "file": "vision.py",
+      "doc": "",
+      "lines": 87,
+      "symbols": [
+        {
+          "name": "MARK_TWAIN_Vision",
+          "kind": "class",
+          "doc": "Machine vision and automation module.",
+          "lines": 69,
+          "methods": [
+            "__init__()",
+            "capture_screen(): Capture screenshot.",
+            "move_and_click(): Move mouse and click (with safety logging).",
+            "type_text(): Emulate text input.",
+            "analyze_ui_with_ai(): Prepare for UI analysis via AI (Gemini Vision / GPT-4V)."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "vision_daemon.py",
+      "doc": "vision_daemon.py",
+      "lines": 51,
+      "symbols": []
+    },
+    {
+      "file": "vision_daemon_real.py",
+      "doc": "vision_daemon_real.py",
+      "lines": 229,
+      "symbols": [
+        {
+          "name": "RealVisionDaemonServer",
+          "kind": "class",
+          "doc": "Real Vision Daemon using OpenCV for actual image processing.",
+          "lines": 183,
+          "methods": [
+            "__init__()",
+            "execute_task(): Dispatch task to appropriate handler."
+          ]
+        },
+        {
+          "name": "run_vision_daemon_real",
+          "kind": "function",
+          "doc": "Start real vision daemon.",
+          "lines": 5
+        }
+      ]
+    },
+    {
+      "file": "vision_self_test.py",
+      "doc": "HDS Vision Self-Test Suite",
+      "lines": 264,
+      "symbols": [
+        {
+          "name": "VisionSelfTest",
+          "kind": "class",
+          "doc": "",
+          "lines": 235,
+          "methods": [
+            "__init__()",
+            "test_health(): Test daemon health",
+            "test_capture_screen(): Test screen capture",
+            "test_analyze_image(): Test image analysis",
+            "test_element_detection(): Test UI element detection",
+            "test_api_response_time(): Test API response time",
+            "log_test(): Log test result",
+            "run_all_tests(): Run all tests"
+          ]
+        },
+        {
+          "name": "main",
+          "kind": "function",
+          "doc": "",
+          "lines": 10
+        }
+      ]
+    },
+    {
+      "file": "vision_utils.py",
+      "doc": "vision_utils.py",
+      "lines": 265,
+      "symbols": [
+        {
+          "name": "VisionUtils",
+          "kind": "class",
+          "doc": "Utility class for computer vision operations.",
+          "lines": 192,
+          "methods": [
+            "load_image(): Load image from file using OpenCV.",
+            "detect_buttons(): Detect button-like elements using edge detection and contours.",
+            "detect_input_fields(): Detect input field-like elements (text boxes).",
+            "get_image_metadata(): Extract metadata from image.",
+            "analyze_colors(): Analyze color distribution in image.",
+            "detect_text_regions(): Detect regions that likely contain text."
+          ]
+        },
+        {
+          "name": "OCRHelper",
+          "kind": "class",
+          "doc": "OCR text extraction helper.",
+          "lines": 45,
+          "methods": [
+            "extract_text_simple(): Simple text extraction using contours.",
+            "try_extract_text(): Try to extract text using Tesseract if available, fall back to simple method."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "vox.py",
+      "doc": "",
+      "lines": 264,
+      "symbols": [
+        {
+          "name": "number_to_words",
+          "kind": "function",
+          "doc": "Convert number to words for speech.",
+          "lines": 16
+        },
+        {
+          "name": "is_technical_message",
+          "kind": "function",
+          "doc": "Returns True if message is purely technical — not for speech.",
+          "lines": 3
+        },
+        {
+          "name": "format_for_speech",
+          "kind": "function",
+          "doc": "Format text for natural speech:",
+          "lines": 30
+        },
+        {
+          "name": "VoxConfig",
+          "kind": "class",
+          "doc": "Load PowerVox configuration.",
+          "lines": 29,
+          "methods": [
+            "load(): Load configuration from JSON."
+          ]
+        },
+        {
+          "name": "VoxService",
+          "kind": "class",
+          "doc": "PowerVox Protocol Implementation.",
+          "lines": 144,
+          "methods": [
+            "__init__()",
+            "speak(): Main notification method. Outputs to console and log.",
+            "protocol(): Announce protocol violation.",
+            "task_executed(): Task execution message.",
+            "system_ready(): System loaded notification - only on first start.",
+            "anti_gravity_signal(): Special anti-gravity pulse notification.",
+            "hybrid_function_gf(): Hybrid Function announcement.",
+            "voice_chat_gh(): Voice Chat implementation.",
+            "task_starting(): Task started notification.",
+            "task_completed(): Task completed successfully notification.",
+            "task_failed_model(): Task requires a different model notification.",
+            "all_tasks_completed(): All tasks finished notification.",
+            "waiting_for_tasks(): Waiting for new tasks notification.",
+            "user_decision_required(): User decision required notification.",
+            "script_execution_required(): User script execution required notification.",
+            "critical_user_action(): Critical message for the user."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "vox_speech.py",
+      "doc": "vox_speech.py",
+      "lines": 435,
+      "symbols": [
+        {
+          "name": "VoiceProfile",
+          "kind": "class",
+          "doc": "Профіль голосу.",
+          "lines": 8
+        },
+        {
+          "name": "HDS6VoxSpeech",
+          "kind": "class",
+          "doc": "PowerVox Speech Engine - Якісна британська озвучка.",
+          "lines": 326,
+          "methods": [
+            "__init__()",
+            "speak(): Повний PowerVox Protocol:",
+            "system_announcement(): Системне привітання при старті.",
+            "protocol_alert(): Оголошення порушення протоколу з відповідним тоном.",
+            "task_complete(): Оголошення виконання задачі.",
+            "list_available_voices(): Список доступних голосів.",
+            "test_all_voices(): Тест всіх доступних голосів."
+          ]
+        },
+        {
+          "name": "main",
+          "kind": "function",
+          "doc": "CLI interface.",
+          "lines": 49
+        }
+      ]
+    },
+    {
+      "file": "web_search_daemon.py",
+      "doc": "web_search_daemon.py",
+      "lines": 539,
+      "symbols": [
+        {
+          "name": "SearchResult",
+          "kind": "class",
+          "doc": "A single web search result.",
+          "lines": 6
+        },
+        {
+          "name": "FactCheck",
+          "kind": "class",
+          "doc": "Result of fact verification against web sources.",
+          "lines": 7
+        },
+        {
+          "name": "web_search",
+          "kind": "function",
+          "doc": "Search the web using DuckDuckGo. No API key required.",
+          "lines": 30
+        },
+        {
+          "name": "fetch_page_text",
+          "kind": "function",
+          "doc": "Fetch a URL and extract clean text content.",
+          "lines": 57
+        },
+        {
+          "name": "verify_fact",
+          "kind": "function",
+          "doc": "Verify a factual claim against web sources.",
+          "lines": 103
+        },
+        {
+          "name": "format_search_for_prompt",
+          "kind": "function",
+          "doc": "Format search results for injection into AI prompt.",
+          "lines": 22
+        },
+        {
+          "name": "format_factcheck_for_prompt",
+          "kind": "function",
+          "doc": "Format fact-check result for injection into AI prompt.",
+          "lines": 20
+        },
+        {
+          "name": "WebSearchDaemonServer",
+          "kind": "class",
+          "doc": "Web Search Daemon for HDS microkernel architecture.",
+          "lines": 145,
+          "methods": [
+            "__init__(): Initialize web search daemon.",
+            "execute_task(): Dispatch task to appropriate handler.",
+            "get_stats(): Daemon statistics.",
+            "start(): Start the daemon HTTP server."
+          ]
+        },
+        {
+          "name": "run_web_search_daemon",
+          "kind": "function",
+          "doc": "Start web search daemon.",
+          "lines": 4
+        }
+      ]
+    },
+    {
+      "file": "webhook_server.py",
+      "doc": "webhook_server.py - Webhook API for HDS v1.1",
+      "lines": 166,
+      "symbols": [
+        {
+          "name": "WebhookServer",
+          "kind": "class",
+          "doc": "Simple webhook API server for task submission and polling.",
+          "lines": 85,
+          "methods": [
+            "__init__()",
+            "start(): Start webhook server.",
+            "submit_task(): Submit task via webhook, optionally with callback_url for async delivery.",
+            "get_task_status(): Get task status."
+          ]
+        },
+        {
+          "name": "WebhookRequestHandler",
+          "kind": "class",
+          "doc": "HTTP request handler for webhooks.",
+          "lines": 63,
+          "methods": [
+            "do_POST(): Handle POST requests.",
+            "do_GET(): Handle GET requests.",
+            "handle_submit_task(): Submit new task.",
+            "handle_get_status(): Get task status.",
+            "log_message(): Suppress request logging."
+          ]
+        }
+      ]
+    },
+    {
+      "file": "webhook_server_enhanced.py",
+      "doc": "HDS Webhook Server with Dashboard API",
+      "lines": 276,
+      "symbols": [
+        {
+          "name": "load_port_registry",
+          "kind": "function",
+          "doc": "Load port registry",
+          "lines": 8
+        },
+        {
+          "name": "load_tasks",
+          "kind": "function",
+          "doc": "Load recent tasks",
+          "lines": 11
+        },
+        {
+          "name": "is_agent_alive",
+          "kind": "function",
+          "doc": "Check if agent process is alive",
+          "lines": 6
+        },
+        {
+          "name": "main",
+          "kind": "function",
+          "doc": "Start webhook server",
+          "lines": 14
+        }
+      ]
+    }
+  ]
+}

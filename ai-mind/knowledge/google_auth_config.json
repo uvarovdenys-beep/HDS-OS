@@ -1,0 +1,29 @@
+{
+  "project_id": "mark-twain-hds6",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "scopes": [
+    "openid",
+    "email",
+    "profile"
+  ],
+  "providers": {
+    "google_gemini": {
+      "enabled": true,
+      "auth_required": true,
+      "models": [
+        "gemini-1.5-flash",
+        "gemini-1.5-pro"
+      ]
+    },
+    "local_ollama": {
+      "enabled": true,
+      "auth_required": false,
+      "endpoint": "http://localhost:11434",
+      "models": [
+        "llama3.2",
+        "mistral"
+      ]
+    }
+  }
+}

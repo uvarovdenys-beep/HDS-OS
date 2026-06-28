@@ -1,0 +1,25 @@
+# HDS OS — ignore runtime artifacts, keep source + config skeleton
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# JS deps (reinstall, never commit)
+gui/node_modules/
+
+# runtime data (per-instance, not source)
+*.log
+logs/
+storage/*
+!storage/.gitkeep
+tasks/*
+!tasks/.gitkeep
+ai-mind/tasks/results/*
+ai-mind/tasks/queue/*
+# runtime task data anywhere (nested ai-mind under agent/, etc.)
+**/tasks/results/*
+**/tasks/queue/*
+
+# secrets — never commit, anywhere
+**/api_key
+ai-mind/config/api_key

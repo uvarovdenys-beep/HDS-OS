@@ -1,0 +1,25 @@
+{
+  "hds6_version": "1.0.0",
+  "speech": {
+    "enabled": true,
+    "voice": "sonia",
+    "language": "en-GB",
+    "volume": 0.8,
+    "speed": 1.0
+  },
+  "notifications": {
+    "smtp_enabled": false,
+    "smtp_recipient": "hds.os.post@gmail.com",
+    "log_level": "INFO"
+  },
+  "security": {
+    "r01_max_lines": 1000,
+    "r01_warn_80": 800,
+    "r01_warn_90": 900,
+    "auto_block_violations": true
+  },
+  "ui": {
+    "power_vox_enabled": true,
+    "power_vox_pause_ms": 600
+  }
+}

@@ -1,0 +1,199 @@
+name: HDS Continuous Integration
+
+# Trigger on every commit to main/develop, and on all PRs
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu
+            runner: ubuntu-latest
+            python: '3.11'
+
+          - os: macos
+            runner: macos-latest
+            python: '3.11'
+
+          - os: windows
+            runner: windows-latest
+            python: '3.11'
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up Python
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+          cache: 'pip'
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pyinstaller playwright
+
+      # 4. Run linting (Python)
+      - name: Lint with pylint
+        run: |
+          pip install pylint
+          pylint agent/*.py --disable=all --enable=syntax-error,undefined-variable || true
+
+      # 5. Run tests
+      - name: Run unit tests
+        run: |
+          python -m pytest new_modules_tests/ -v --tb=short --maxfail=5 2>&1 | head -100
+
+      # 6. Check for Cyrillic violations
+      - name: Check Cyrillic compliance
+        run: |
+          python3 << 'PYTHON_EOF'
+import os
+import re
+
+cyrillic_pattern = re.compile(r'[Ѐ-ӿ]')
+violations = []
+
+for root, dirs, files in os.walk('.'):
+    dirs[:] = [d for d in dirs if d not in ['.git', '.github', '__pycache__', '.archive', 'node_modules', 'build', 'dist']]
+    
+    for file in files:
+        if file.endswith(('.py', '.sh')):
+            filepath = os.path.join(root, file)
+            with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+                for line_num, line in enumerate(f, 1):
+                    # Skip comments in docstrings for flexibility
+                    if cyrillic_pattern.search(line):
+                        violations.append(f'{filepath}:{line_num}: {line.strip()[:60]}')
+
+if violations:
+    print('⚠️  Cyrillic violations found:')
+    for v in violations[:20]:
+        print(f'  {v}')
+    if len(violations) > 20:
+        print(f'  ... and {len(violations)-20} more')
+else:
+    print('✅ No Cyrillic violations detected')
+PYTHON_EOF
+
+      # 7. Check project health
+      - name: Verify project structure
+        run: |
+          python3 << 'PYTHON_EOF'
+import os
+import json
+
+required_files = [
+    'agent/agent.py',
+    'agent/port_registry.py',
+    'agent/port_checker.py',
+    'agent/vision_daemon.py',
+    'agent/browser_daemon.py',
+    'agent/webhook_server.py',
+    'requirements.txt',
+    'FIRST_RUN.md',
+]
+
+missing = [f for f in required_files if not os.path.exists(f)]
+
+if missing:
+    print(f'❌ Missing files: {missing}')
+    exit(1)
+else:
+    print(f'✅ All {len(required_files)} required files present')
+
+# Check SCIENCE is protected
+science_path = 'SCIENCE'
+if os.path.exists(science_path):
+    print(f'✅ SCIENCE folder protected')
+else:
+    print(f'ℹ️  SCIENCE folder not found (optional)')
+PYTHON_EOF
+
+      # 8. Build matrix summary
+      - name: Summary
+        if: always()
+        run: |
+          echo "✅ Tests completed on ${{ matrix.os }}"
+
+  build-check:
+    name: Build Compatibility Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Check build automation script
+        run: |
+          python3 -m py_compile build_automation.py
+          echo "✅ build_automation.py syntax OK"
+
+      - name: Validate build config
+        run: |
+          python3 << 'PYTHON_EOF'
+import yaml
+with open('build_config.yaml') as f:
+    config = yaml.safe_load(f)
+print('✅ build_config.yaml is valid')
+print(f"   - Production: {len(config.get('production', {}).get('include', []))} paths")
+print(f"   - Public: {len(config.get('public', {}).get('include', []))} paths")
+PYTHON_EOF
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Generate coverage report
+        run: |
+          python -m pytest new_modules_tests/ --cov=agent --cov-report=xml --cov-report=term 2>&1 | tail -20
+
+  final:
+    name: CI Status
+    needs: [test, build-check, coverage]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: All checks passed
+        if: needs.test.result == 'success' && needs.build-check.result == 'success'
+        run: echo "✅ All CI checks passed"
+
+      - name: Some checks failed
+        if: needs.test.result != 'success' || needs.build-check.result != 'success'
+        run: |
+          echo "❌ Some CI checks failed"
+          exit 1

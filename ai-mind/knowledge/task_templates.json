@@ -1,0 +1,153 @@
+{
+  "web_scrape_template": {
+    "name": "Web Scraping Task",
+    "description": "Template for web scraping and data extraction",
+    "task_type": "web_analysis",
+    "priority": "MEDIUM",
+    "max_retries": 3,
+    "timeout_seconds": 300,
+    "metadata": {
+      "analysis_type": "content",
+      "extract_links": true,
+      "extract_images": false
+    },
+    "tags": ["web", "scraping", "data"]
+  },
+  "vision_automation_template": {
+    "name": "Vision Automation Task",
+    "description": "Template for computer vision automation",
+    "task_type": "vision_action",
+    "priority": "HIGH",
+    "max_retries": 2,
+    "timeout_seconds": 180,
+    "metadata": {
+      "safe_mode": true,
+      "confidence_threshold": 0.8
+    },
+    "tags": ["vision", "automation", "ui"]
+  },
+  "script_execution_template": {
+    "name": "Script Execution Task",
+    "description": "Template for Python script execution",
+    "task_type": "script",
+    "priority": "MEDIUM",
+    "max_retries": 3,
+    "timeout_seconds": 600,
+    "metadata": {
+      "estimated_memory_mb": 256,
+      "python_version": "3.9"
+    },
+    "tags": ["script", "python", "execution"]
+  },
+  "integrated_analysis_template": {
+    "name": "Integrated Analysis Task",
+    "description": "Template for multi-component analysis",
+    "task_type": "integrated",
+    "priority": "HIGH",
+    "max_retries": 2,
+    "timeout_seconds": 900,
+    "metadata": {
+      "components": ["web_analysis", "vision"],
+      "tts_message": "Analysis completed successfully"
+    },
+    "tags": ["integrated", "analysis", "multi-component"]
+  },
+  "scheduled_maintenance_template": {
+    "name": "Scheduled Maintenance Task",
+    "description": "Template for system maintenance tasks",
+    "task_type": "scheduled",
+    "priority": "LOW",
+    "max_retries": 1,
+    "timeout_seconds": 300,
+    "metadata": {
+      "maintenance_type": "cleanup",
+      "backup_data": true
+    },
+    "tags": ["maintenance", "scheduled", "system"]
+  },
+  "conditional_task_template": {
+    "name": "Conditional Execution Task",
+    "description": "Template for conditional task execution",
+    "task_type": "conditional",
+    "priority": "MEDIUM",
+    "max_retries": 3,
+    "timeout_seconds": 600,
+    "conditions": [
+      {
+        "condition_type": "time_based",
+        "criteria": {
+          "after": "09:00",
+          "before": "17:00"
+        },
+        "action": "execute"
+      }
+    ],
+    "metadata": {
+      "business_hours_only": true
+    },
+    "tags": ["conditional", "time-based", "business"]
+  },
+  "data_processing_template": {
+    "name": "Data Processing Task",
+    "description": "Template for data processing and transformation",
+    "task_type": "script",
+    "priority": "HIGH",
+    "max_retries": 2,
+    "timeout_seconds": 1800,
+    "dependencies": [
+      {
+        "task_id": "data_validation",
+        "dependency_type": "completion"
+      }
+    ],
+    "metadata": {
+      "estimated_memory_mb": 512,
+      "input_format": "json",
+      "output_format": "csv"
+    },
+    "tags": ["data", "processing", "transformation"]
+  },
+  "notification_task_template": {
+    "name": "Notification Task",
+    "description": "Template for sending notifications",
+    "task_type": "integrated",
+    "priority": "MEDIUM",
+    "max_retries": 3,
+    "timeout_seconds": 120,
+    "metadata": {
+      "components": ["tts"],
+      "tts_message": "Task notification",
+      "notification_type": "info"
+    },
+    "tags": ["notification", "tts", "communication"]
+  },
+  "backup_task_template": {
+    "name": "System Backup Task",
+    "description": "Template for system backup operations",
+    "task_type": "script",
+    "priority": "CRITICAL",
+    "max_retries": 1,
+    "timeout_seconds": 3600,
+    "metadata": {
+      "backup_type": "full",
+      "compression": true,
+      "destination": "backup_storage"
+    },
+    "tags": ["backup", "critical", "storage"]
+  },
+  "monitoring_task_template": {
+    "name": "System Monitoring Task",
+    "description": "Template for system monitoring and health checks",
+    "task_type": "script",
+    "priority": "MEDIUM",
+    "max_retries": 3,
+    "timeout_seconds": 300,
+    "metadata": {
+      "check_cpu": true,
+      "check_memory": true,
+      "check_disk": true,
+      "alert_threshold": 80
+    },
+    "tags": ["monitoring", "health", "system"]
+  }
+}

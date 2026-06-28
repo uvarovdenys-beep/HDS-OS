@@ -1,0 +1,37 @@
+# HDS v1.1 - Real Vision & Browser Daemon Dependencies
+# Install with: pip install -r requirements_real.txt
+
+# Core Python
+python-dotenv>=0.19.0
+PyYAML>=5.4
+pydantic>=1.8
+
+# Vision Daemon - Real Image Processing
+pillow>=9.0.0              # Image manipulation
+opencv-python>=4.5.0       # Computer vision
+numpy>=1.20.0              # Array operations
+pyautogui>=0.9.53          # Screen capture
+pytesseract>=0.3.10        # OCR text extraction
+
+# Browser Daemon - Real Web Automation
+playwright>=1.40.0         # Browser automation
+beautifulsoup4>=4.9.0      # HTML parsing
+html2text>=2020.1.16       # HTML to markdown conversion
+
+# Web Search Daemon - Internet Search & Fact Verification
+duckduckgo-search>=7.0.0   # Web search (no API key needed)
+
+# IPC & Networking
+requests>=2.26.0           # HTTP client
+
+# Server & API
+fastapi>=0.100.0           # Web framework (if needed for webhook)
+uvicorn>=0.23.0            # ASGI server (if needed for webhook)
+
+# Logging
+colorlog>=6.0.0            # Colored logging output
+
+# Development (optional)
+pytest>=7.0.0              # Testing
+pytest-asyncio>=0.21.0     # Async testing
+pytest-cov>=4.0.0          # Coverage reporting

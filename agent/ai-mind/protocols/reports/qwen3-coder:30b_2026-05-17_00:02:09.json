@@ -1,0 +1,53 @@
+{
+  "model": "qwen3-coder:30b",
+  "size": "L",
+  "score": 14,
+  "max_score": 18,
+  "protocol_file": "ai-mind/protocols/hds_l.md",
+  "timestamp": "2026-05-17 00:02:09",
+  "duration": 45.97515797615051,
+  "tests": [
+    {
+      "name": "Context Retention",
+      "score": 1,
+      "max": 3,
+      "reasoning": "Правило частково забуте",
+      "duration": 35.20260310173035
+    },
+    {
+      "name": "Instruction Boundary",
+      "score": 3,
+      "max": 3,
+      "reasoning": "Тільки tax_rate — нічого зайвого",
+      "duration": 1.9019560813903809
+    },
+    {
+      "name": "Structured Output",
+      "score": 3,
+      "max": 3,
+      "reasoning": "Чистий JSON, парситься, всі поля на місці",
+      "duration": 1.774223804473877
+    },
+    {
+      "name": "Self-Awareness",
+      "score": 3,
+      "max": 3,
+      "reasoning": "Все правильно: Париж + 'не знаю' + 255",
+      "duration": 1.3226938247680664
+    },
+    {
+      "name": "Multi-Step Planning",
+      "score": 3,
+      "max": 3,
+      "reasoning": "Config першим + розуміє каскад залежностей",
+      "duration": 4.627577304840088
+    },
+    {
+      "name": "Error Recovery",
+      "score": 1,
+      "max": 3,
+      "reasoning": "Повторює помилку або force install",
+      "duration": 1.144432783126831
+    }
+  ]
+}
