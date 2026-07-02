@@ -10,6 +10,7 @@ planned but not yet built are not listed here.
 - **R-PATH** — path-escape detection; refuses writes outside `ROOT`
 - **R-KERNEL** — cage files (`scribe.py`, `ast_validator.py`, `write_path_audit.py`, `events.py`) are write-protected at all capability levels
 - **R-CAP / protocol_size** — `s/m/l/xl` capability ladder; `s` = sandbox-only, `l` = code+markup, `xl` = +delete; `None` = trusted caller (skips cap gate, still runs content gate)
+- **R-SEAL** — `scribe.seal()` freezes the cage geometry (root, sandbox, code dirs) for the process; the orchestrator seals before the untrusted-model loop starts, so no code reached from a task can re-root the cage via `configure()`
 - **R-AST** — per-language content validation via `lang/` registry; fail-closed on missing validator
 
 ## Language validators (`lang/`)
@@ -21,8 +22,8 @@ hardcoded extension list in the cage.
 |----------|------|------------|
 | Python | `lang/python/validator.py` | AST scan — blocks `eval/exec/subprocess/__import__/compile` |
 | JavaScript / TypeScript | `lang/js/validator.py` | `node --check` (syntax) + `tsc` (types); browser vs Node detection |
-| HTML / HTM | `lang/html/validator.py` | Inline-script deny scan (`<script>`, event handlers, `javascript:`) |
-| SVG / SVGZ | `lang/svg/validator.py` | Same inline-script scan as HTML |
+| HTML / HTM | `lang/html/validator.py` | Parser-based (`lang/_markup.py`): entities decoded before inspection; blocks event handlers, `javascript:`/`data:text/html` URIs, `eval`/`Function`/`import()` in scripts |
+| SVG / SVGZ | `lang/svg/validator.py` | Same parser + SVG-specific: `<foreignObject>`, SMIL event retargeting (`<set attributeName="on…">`) |
 | PHP | `lang/php/validator.py` | `php -l` syntax check |
 | C++ | `lang/cpp/validator.py` | `clang++ -fsyntax-only` |
 | C# | `lang/cs/validator.py` | `dotnet build` with temp `.csproj` |

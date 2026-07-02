@@ -155,16 +155,11 @@ class HDSAgent(YAMLTaskSupportMixin):
         }
         self.microkernel = MicrokernelIPCClient(daemon_config)
 
-        # v1.1: Webhook API server (port 8080)
-        try:
-            from webhook_server import WebhookServer
-            self.webhook_server = WebhookServer(port=8080, tasks_dir=self.TASKS_ACTIVE)
-            import threading
-            threading.Thread(target=self.webhook_server.start, daemon=True).start()
-            self.vox.speak("Webhook API started on port 8080", "INFO")
-        except Exception as e:
-            self.webhook_server = None
-            self.logger.warning(f"Webhook server not started: {e}")
+        # Webhook API is NOT started here. The old embedded WebhookServer was
+        # unauthenticated on a fixed port (8080) — a second, weaker HTTP surface.
+        # The single webhook surface is agent/webhook_server_enhanced.py
+        # (authenticated, dynamic port), started by the launchers.
+        self.webhook_server = None
 
         # Model trust registry (canary-tested models)
         self._trusted_models = {}  # model_name -> protocol_level

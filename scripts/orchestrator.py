@@ -131,6 +131,10 @@ def main():
     sys_prompt = sys.argv[4] if len(sys.argv) > 4 else "You are an expert developer."
 
     orchestrator = UniversalOrchestrator(endpoint, model)
+
+    # The untrusted-model loop starts here — freeze the cage geometry so no
+    # code reached from a task can re-root scribe (R-SEAL).
+    scribe.seal()
     
     if os.path.exists(task):
         with open(task, "r") as f:

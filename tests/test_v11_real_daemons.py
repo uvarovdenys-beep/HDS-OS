@@ -141,61 +141,6 @@ def test_browser_utils_clean_selector():
     print("  PASS: clean_selector validates and strips")
 
 
-# ===== WEBHOOK SERVER TESTS =====
-
-def test_webhook_submit_and_status():
-    """WebhookServer accepts tasks and reports status."""
-    from webhook_server import WebhookServer
-
-    with tempfile.TemporaryDirectory() as tmp:
-        tasks_dir = Path(tmp) / "active"
-        tasks_dir.mkdir()
-        (Path(tmp) / "completed").mkdir()
-
-        ws = WebhookServer(port=18080, tasks_dir=tasks_dir)
-
-        task_id = ws.submit_task({
-            "task_id": "TEST-001",
-            "type": "browser",
-            "url": "https://example.com"
-        })
-
-        assert task_id == "TEST-001"
-        assert (tasks_dir / "TEST-001.json").exists()
-
-        status = ws.get_task_status("TEST-001")
-        assert status["status"] == "pending"
-
-        status = ws.get_task_status("NONEXIST")
-        assert status["status"] == "not_found"
-
-    print("  PASS: webhook submit and status work")
-
-
-def test_webhook_completed_status():
-    """WebhookServer returns completed status when result file exists."""
-    from webhook_server import WebhookServer
-
-    with tempfile.TemporaryDirectory() as tmp:
-        tasks_dir = Path(tmp) / "active"
-        tasks_dir.mkdir()
-        completed_dir = Path(tmp) / "completed"
-        completed_dir.mkdir()
-
-        ws = WebhookServer(port=18081, tasks_dir=tasks_dir)
-        ws.submit_task({"task_id": "TEST-002", "type": "vision"})
-
-        # Simulate completion
-        result = {"status": "success", "data": "test"}
-        (completed_dir / "TEST-002_RESULT.json").write_text(json.dumps(result))
-
-        status = ws.get_task_status("TEST-002")
-        assert status["status"] == "completed"
-        assert status["result"]["data"] == "test"
-
-    print("  PASS: webhook returns completed status")
-
-
 # ===== WEB SEARCH DAEMON TESTS =====
 
 def test_web_search_daemon_import():
@@ -288,8 +233,6 @@ def main():
         ("BrowserUtils.estimate_tokens", test_browser_utils_token_estimation),
         ("BrowserUtils.calculate_savings", test_browser_utils_calculate_savings),
         ("BrowserUtils.clean_selector", test_browser_utils_clean_selector),
-        ("Webhook.submit_and_status", test_webhook_submit_and_status),
-        ("Webhook.completed_status", test_webhook_completed_status),
         ("WebSearch.import", test_web_search_daemon_import),
         ("WebSearch.format_prompt", test_web_search_format_prompt),
         ("WebSearch.format_factcheck", test_web_search_format_factcheck),

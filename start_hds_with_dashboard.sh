@@ -79,13 +79,13 @@ python3 << 'PYTHON'
 import sys
 import os
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
+from agent import HDSAgent
 
 os.environ['VISION_PORT'] = os.environ['VISION_PORT']
 os.environ['BROWSER_PORT'] = os.environ['BROWSER_PORT']
 os.environ['WEBHOOK_PORT'] = os.environ['WEBHOOK_PORT']
 
-agent = HDS6Agent()
+agent = HDSAgent()
 if os.environ.get('MODE', 'monitor') == 'monitor':
     agent.monitor()
 else:

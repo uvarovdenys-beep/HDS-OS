@@ -54,8 +54,8 @@ import sys
 import os
 os.environ['HDS_SILENT'] = '1'
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
-agent = HDS6Agent()
+from agent import HDSAgent
+agent = HDSAgent()
 agent.monitor()
     "
 elif [ "$1" == "--once" ]; then
@@ -65,8 +65,8 @@ import sys
 import os
 os.environ['HDS_SILENT'] = '1'
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
-agent = HDS6Agent()
+from agent import HDSAgent
+agent = HDSAgent()
 agent.run()
     "
 else
@@ -81,9 +81,9 @@ import sys
 import os
 os.environ['HDS_SILENT'] = '1'
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
+from agent import HDSAgent
 print('[HDS-SILENT] Agent initialized. Type Ctrl+C to exit.')
-agent = HDS6Agent()
+agent = HDSAgent()
 agent.run()
     "
 fi

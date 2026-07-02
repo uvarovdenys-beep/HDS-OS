@@ -206,6 +206,6 @@ installed, that language falls back to hygiene (never a silent pass).
 
 | # | Limit | Impact | Workaround |
 |---|-------|--------|-----------|
-| 3 | `scribe.configure()` sets **module-level globals** — not thread-safe | Two projects in one process overwrite each other's ROOT | One process per project (current architecture); fix = Scribe class (future) |
+| 3 | `scribe.configure()` sets **module-level globals** — not thread-safe | Two projects in one process overwrite each other's ROOT | One process per project (current architecture); fix = Scribe class (future). Partially mitigated: `scribe.seal()` (R-SEAL) freezes geometry after startup — the orchestrator seals before the model loop |
 | 4 | `auto_decompose.py` is **Python-only** — JS/HTML/CSS hit R-01 ScribeError at >1000 lines with no auto-split | Frontend files have no size safety net | Keep files under the limit; discipline is the gate, not the OS |
 | 8 | `setTimeout`-based UI locking has a **micro-window race** (element visible ~300ms before hide applies) | Edge UX issue in browser | Hide via CSS class at mount, not `style.display` after timeout |

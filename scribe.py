@@ -68,14 +68,33 @@ CODE_EXTS = (".py", ".sh", ".js", ".ts", ".tsx", ".jsx",
 _post_write_hook = None
 
 
+# Once sealed, the cage geometry (root, sandbox, code dirs) is frozen for the
+# life of the process. Closes the hole where any in-process code could call
+# configure(root="/") and silently relocate the cage after startup.
+_sealed = False
+
+
+def seal():
+    """Freeze the cage configuration. Irreversible for this process.
+
+    Call after the last configure() at startup; later configure() raises.
+    """
+    global _sealed
+    _sealed = True
+
+
 def configure(root=None, sandbox_roots=None, code_dirs=None,
               code_exts=None, max_lines=None):
     """Adapt the cage to a host project's layout. Call once at startup.
 
     All args optional; unset ones keep their defaults. This is what makes core
     drop-in: a new project sets its own sandbox/code dirs instead of HDS's.
+    After seal(), reconfiguration is refused.
     """
     global ROOT, SANDBOX_ROOTS, CODE_DIRS, CODE_EXTS, MAX_LINES
+    if _sealed:
+        raise ScribeError("R-SEAL: cage configuration is sealed — "
+                          "configure() refused after seal()")
     if root is not None:
         ROOT = Path(root).resolve()
     if sandbox_roots is not None:

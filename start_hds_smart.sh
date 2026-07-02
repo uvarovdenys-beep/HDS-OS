@@ -266,14 +266,14 @@ if [ "$MODE" = "monitor" ]; then
 import sys
 import os
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
+from agent import HDSAgent
 
 os.environ['VISION_PORT'] = '$VISION_PORT'
 os.environ['BROWSER_PORT'] = '$BROWSER_PORT'
 os.environ['WEBHOOK_PORT'] = '$WEBHOOK_PORT'
 os.environ['HDS_SILENT'] = '$AUDIO_MODE'
 
-agent = HDS6Agent()
+agent = HDSAgent()
 agent.monitor()
     "
 elif [ "$MODE" = "once" ]; then
@@ -283,14 +283,14 @@ elif [ "$MODE" = "once" ]; then
 import sys
 import os
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
+from agent import HDSAgent
 
 os.environ['VISION_PORT'] = '$VISION_PORT'
 os.environ['BROWSER_PORT'] = '$BROWSER_PORT'
 os.environ['WEBHOOK_PORT'] = '$WEBHOOK_PORT'
 os.environ['HDS_SILENT'] = '$AUDIO_MODE'
 
-agent = HDS6Agent()
+agent = HDSAgent()
 agent.run()
     "
 fi

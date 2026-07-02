@@ -47,8 +47,8 @@ if [ "$1" == "--monitor" ]; then
     python3 -c "
 import sys
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
-agent = HDS6Agent()
+from agent import HDSAgent
+agent = HDSAgent()
 agent.monitor()
     "
 elif [ "$1" == "--once" ]; then
@@ -56,8 +56,8 @@ elif [ "$1" == "--once" ]; then
     python3 -c "
 import sys
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
-agent = HDS6Agent()
+from agent import HDSAgent
+agent = HDSAgent()
 agent.run()
     "
 else
@@ -70,9 +70,9 @@ else
     python3 -c "
 import sys
 sys.path.insert(0, 'agent')
-from agent import HDS6Agent
+from agent import HDSAgent
 print('[HDS] Agent initialized. Type Ctrl+C to exit.')
-agent = HDS6Agent()
+agent = HDSAgent()
 agent.run()
     "
 fi

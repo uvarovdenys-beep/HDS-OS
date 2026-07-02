@@ -1,16 +1,8 @@
-"""SVG guard: SVG is markup but allows <script> — same injection surface as HTML."""
-import re
+"""SVG guard: parser-based — <script>, event handlers, foreignObject, SMIL retargeting."""
 from .. import register
-from .._hygiene import deny_scan
-
-_PAT = [
-    ("inline event handler", re.compile(r"<[^>]+\son\w+\s*=", re.I)),
-    ("javascript: uri",       re.compile(r"javascript:", re.I)),
-    ("inline <script> with eval", re.compile(
-        r"<script[^>]*>[^<]*\beval\s*\(", re.I | re.S)),
-]
+from .._markup import scan_markup
 
 
 @register(".svg", ".svgz", kind="markup")
 def validate_svg(content, path):
-    deny_scan(content, path, _PAT)
+    scan_markup(content, path, svg_mode=True)
