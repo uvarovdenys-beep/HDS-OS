@@ -1,0 +1,220 @@
+{
+  "default_config": {
+    "browser_type": "chrome",
+    "navigation_mode": "headless",
+    "security_level": "standard",
+    "timeout_seconds": 30,
+    "max_sessions": 5,
+    "max_requests_per_session": 100,
+    "screenshot_dir": "ai-mind/cache/screenshots",
+    "cache_dir": "ai-mind/cache/browser"
+  },
+  "security_profiles": {
+    "minimal": {
+      "description": "Basic restrictions only",
+      "allowed_schemes": ["http", "https"],
+      "blocked_domains": [],
+      "content_filtering": false
+    },
+    "standard": {
+      "description": "Standard security for general use",
+      "allowed_schemes": ["https"],
+      "blocked_domains": [
+        "malware-site.com",
+        "phishing-site.com"
+      ],
+      "content_filtering": true,
+      "block_scripts": false,
+      "block_forms": false
+    },
+    "strict": {
+      "description": "High security for sensitive operations",
+      "allowed_schemes": ["https"],
+      "blocked_domains": [
+        "social-media.com",
+        "ads-site.com",
+        "tracking-site.com"
+      ],
+      "content_filtering": true,
+      "block_scripts": true,
+      "block_forms": true,
+      "block_iframes": true
+    },
+    "sandbox": {
+      "description": "Maximum isolation and security",
+      "allowed_schemes": ["https"],
+      "allowed_domains": [
+        "wikipedia.org",
+        "github.com",
+        "stackoverflow.com",
+        "docs.python.org"
+      ],
+      "blocked_domains": ["*"],
+      "content_filtering": true,
+      "block_scripts": true,
+      "block_forms": true,
+      "block_iframes": true,
+      "isolate_storage": true
+    }
+  },
+  "browser_configs": {
+    "chrome": {
+      "options": [
+        "--no-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--disable-web-security",
+        "--disable-features=VizDisplayCompositor",
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding"
+      ],
+      "headless_options": [
+        "--headless",
+        "--disable-gpu",
+        "--window-size=1920,1080"
+      ],
+      "user_agents": {
+        "default": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "mobile": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1",
+        "bot": "HDS6-Browser-Agent/1.0 (Educational Purpose)"
+      }
+    },
+    "firefox": {
+      "options": [
+        "--no-remote",
+        "--disable-gpu"
+      ],
+      "headless_options": [
+        "--headless"
+      ]
+    },
+    "edge": {
+      "options": [
+        "--no-sandbox",
+        "--disable-dev-shm-usage"
+      ],
+      "headless_options": [
+        "--headless"
+      ]
+    }
+  },
+  "content_extraction": {
+    "default_extractors": [
+      "title",
+      "headings",
+      "text",
+      "links",
+      "images",
+      "metadata"
+    ],
+    "advanced_extractors": [
+      "tables",
+      "forms",
+      "lists",
+      "code_blocks"
+    ],
+    "text_processing": {
+      "max_text_length": 100000,
+      "preserve_formatting": true,
+      "remove_whitespace": true,
+      "encoding": "utf-8"
+    }
+  },
+  "monitoring": {
+    "log_level": "INFO",
+    "enable_request_logging": true,
+    "enable_screenshot_logging": true,
+    "enable_performance_monitoring": true,
+    "alert_thresholds": {
+      "failed_requests_rate": 0.1,
+      "average_response_time": 30.0,
+      "memory_usage_mb": 1024
+    }
+  },
+  "proxy_settings": {
+    "enable_proxy": false,
+    "proxy_types": ["http", "https", "socks5"],
+    "default_proxy": null,
+    "proxy_rotation": false,
+    "proxy_list": []
+  },
+  "rate_limiting": {
+    "enable_rate_limiting": true,
+    "requests_per_minute": 60,
+    "requests_per_hour": 1000,
+    "burst_size": 10,
+    "rate_limit_strategy": "token_bucket"
+  },
+  "caching": {
+    "enable_caching": true,
+    "cache_ttl_seconds": 3600,
+    "max_cache_size_mb": 500,
+    "cache_strategy": "lru",
+    "cacheable_content_types": [
+      "text/html",
+      "text/plain",
+      "application/json",
+      "application/xml"
+    ]
+  },
+  "integration": {
+    "ai_driver_pipeline": {
+      "enabled": true,
+      "task_type": "browser_navigation",
+      "auto_session_creation": true,
+      "default_security_level": "standard"
+    },
+    "web_analysis_plugin": {
+      "enabled": true,
+      "auto_content_analysis": true,
+      "extract_metadata": true
+    },
+    "vision_controller": {
+      "enabled": true,
+      "auto_screenshot_analysis": true,
+      "element_detection": true
+    }
+  },
+  "examples": {
+    "simple_navigation": {
+      "description": "Navigate to a website and extract content",
+      "config": {
+        "browser_type": "chrome",
+        "navigation_mode": "headless",
+        "security_level": "standard"
+      },
+      "request": {
+        "url": "https://example.com",
+        "screenshot": true,
+        "extract_content": true
+      }
+    },
+    "web_scraping": {
+      "description": "Extract structured data from multiple pages",
+      "config": {
+        "browser_type": "chrome",
+        "navigation_mode": "headless",
+        "security_level": "minimal"
+      },
+      "request": {
+        "url": "https://news-site.com",
+        "extract_content": true,
+        "wait_for_element": ".article-content"
+      }
+    },
+    "form_interaction": {
+      "description": "Interact with web forms (requires standard security)",
+      "config": {
+        "browser_type": "chrome",
+        "navigation_mode": "automated",
+        "security_level": "minimal"
+      },
+      "request": {
+        "url": "https://search-site.com",
+        "extract_content": true,
+        "wait_for_element": "#search-form"
+      }
+    }
+  }
+}

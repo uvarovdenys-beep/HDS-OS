@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-06-01 21:35:27",
+  "tests": [
+    {
+      "name": "health_check",
+      "passed": false,
+      "data": null
+    },
+    {
+      "name": "screen_capture",
+      "passed": false,
+      "data": null
+    },
+    {
+      "name": "image_analysis",
+      "passed": false,
+      "data": null
+    },
+    {
+      "name": "element_detection",
+      "passed": false,
+      "data": null
+    },
+    {
+      "name": "response_time",
+      "passed": false,
+      "data": null
+    }
+  ],
+  "passed": 0,
+  "failed": 5
+}

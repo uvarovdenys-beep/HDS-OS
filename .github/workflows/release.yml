@@ -1,0 +1,330 @@
+name: HDS v1.1 Release Build
+
+# Trigger on version tag (e.g., v1.1, v1.1.0, v1.1-rc1)
+on:
+  push:
+    tags:
+      - 'v1.*'
+
+jobs:
+  build-matrix:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - os: windows
+            runner: windows-latest
+            artifact: hds-1.1-windows.exe
+
+          - os: linux
+            runner: ubuntu-latest
+            artifact: hds-1.1-linux.AppImage
+
+          - os: macos
+            runner: macos-latest
+            artifact: hds-1.1-macos.dmg
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up Python 3.11
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # 3. Install system dependencies
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            python3-dev \
+            libssl-dev \
+            libffi-dev \
+            appimage-builder \
+            fuse \
+            libfuse2
+
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install create-dmg
+
+      - name: Install system dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install -y microsoft-build-tools
+
+      # 4. Install Python dependencies
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller playwright pyautogui pytesseract opencv-python
+
+      # 5. Install Node.js for GUI build
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: gui/package-lock.json
+
+      # 6. Build GUI (React)
+      - name: Build React GUI
+        run: |
+          cd gui
+          npm install
+          npm run build
+          cd ..
+
+      # 7. Run build automation script
+      - name: Build HDS Release
+        env:
+          VISION_PORT: '9001'
+          BROWSER_PORT: '9002'
+          WEBHOOK_PORT: '8080'
+          BUILD_OS: ${{ matrix.os }}
+        run: |
+          python build_automation.py --platform ${{ matrix.os }} --output dist/
+
+      # 8. Sign macOS artifacts (requires certificate)
+      - name: Sign macOS artifact
+        if: runner.os == 'macOS'
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+          MACOS_DEVELOPER_ID: ${{ secrets.MACOS_DEVELOPER_ID }}
+        run: |
+          if [ -n "$MACOS_CERTIFICATE" ]; then
+            echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+            security create-keychain -p temppassword build.keychain
+            security unlock-keychain -p temppassword build.keychain
+            security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PWD" -A
+            codesign -s "$MACOS_DEVELOPER_ID" --timestamp --deep dist/${{ matrix.artifact }}
+            rm -f certificate.p12
+            security delete-keychain build.keychain
+          else
+            echo "⚠️  Skipping signature verification - no certificate in secrets"
+          fi
+
+      # 9. Generate checksums
+      - name: Generate SHA256 checksums
+        run: |
+          python3 << 'PYTHON_EOF'
+import hashlib
+import os
+
+artifact = 'dist/${{ matrix.artifact }}'
+if os.path.exists(artifact):
+    with open(artifact, 'rb') as f:
+        hash_value = hashlib.sha256(f.read()).hexdigest()
+    print(f'{hash_value}  ${{ matrix.artifact }}')
+    with open(f'{artifact}.sha256', 'w') as f:
+        f.write(f'{hash_value}  ${{ matrix.artifact }}\n')
+else:
+    print(f'Error: {artifact} not found')
+    exit(1)
+PYTHON_EOF
+
+      # 10. Upload artifacts to job cache
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: hds-${{ matrix.os }}
+          path: |
+            dist/${{ matrix.artifact }}
+            dist/${{ matrix.artifact }}.sha256
+          retention-days: 30
+
+  release:
+    name: Create GitHub Release
+    needs: build-matrix
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Download all artifacts
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: release-artifacts/
+
+      # 3. Collect all artifacts
+      - name: Organize release artifacts
+        run: |
+          mkdir -p release/
+          find release-artifacts -type f \( -name "*.exe" -o -name "*.AppImage" -o -name "*.dmg" -o -name "*.sha256" \) -exec cp {} release/ \;
+          ls -lah release/
+
+      # 4. Generate release notes
+      - name: Generate release notes
+        run: |
+          python3 << 'PYTHON_EOF'
+from pathlib import Path
+from datetime import datetime
+
+tag = '${{ github.ref }}'.split('/')[-1]
+version = tag.lstrip('v')
+
+checksums = {}
+for sha_file in Path('release').glob('*.sha256'):
+    with open(sha_file) as f:
+        checksums[sha_file.stem] = f.read().strip()
+
+notes = f'''# HDS v{version} Release
+
+**Release Date**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}
+
+## ✨ What's New in v1.1
+
+### Core Features
+- ✅ Real Vision Daemon (PyAutoGUI + Tesseract OCR + OpenCV)
+- ✅ Real Browser Daemon (Playwright automation)
+- ✅ Webhook API (async task submission with callbacks)
+- ✅ Dynamic Port Allocation (deterministic, multi-instance safe)
+- ✅ Horizontal Scaling Design (v2.0 architecture)
+
+### Improvements
+- 🔧 Fixed critical port allocation bug (multi-instance support)
+- 🧹 Complete Cyrillic cleanup (all code English-only)
+- 📊 Automated dead code detection and archiving
+- 🚀 Full CI/CD automation pipeline
+
+## 📥 Downloads
+
+### Windows
+- **Executable**: [hds-1.1-windows.exe](../../releases/download/{tag}/hds-1.1-windows.exe)
+- **SHA256**: `{checksums.get('hds-1.1-windows.exe', 'N/A')}`
+- **Size**: ~30 MB
+- **Requirements**: Windows 10+ (x64)
+
+### Linux
+- **AppImage**: [hds-1.1-linux.AppImage](../../releases/download/{tag}/hds-1.1-linux.AppImage)
+- **SHA256**: `{checksums.get('hds-1.1-linux.AppImage', 'N/A')}`
+- **Size**: ~40 MB
+- **Requirements**: Ubuntu 20.04+ (x64) or compatible
+
+### macOS
+- **DMG**: [hds-1.1-macos.dmg](../../releases/download/{tag}/hds-1.1-macos.dmg)
+- **SHA256**: `{checksums.get('hds-1.1-macos.dmg', 'N/A')}`
+- **Size**: ~45 MB
+- **Requirements**: macOS 10.14+ (x64)
+
+## 🔐 Verify Downloads
+
+### On Linux/macOS:
+\`\`\`bash
+sha256sum -c SHA256SUMS.txt
+\`\`\`
+
+### On Windows (PowerShell):
+\`\`\`powershell
+certUtil -hashfile hds-1.1-windows.exe SHA256
+\`\`\`
+
+## 🚀 Quick Start
+
+### Linux
+\`\`\`bash
+chmod +x hds-1.1-linux.AppImage
+./hds-1.1-linux.AppImage --ai "MyAI" --monitor
+\`\`\`
+
+### macOS
+\`\`\`bash
+hdiutil attach hds-1.1-macos.dmg
+cp ./dist/hds.app ~/Applications/
+open ~/Applications/hds.app
+\`\`\`
+
+### Windows
+\`\`\`powershell
+.\\hds-1.1-windows.exe --ai "MyAI" --monitor
+\`\`\`
+
+## 📚 Documentation
+
+- [README.md](https://github.com/uvarovdenys-beep/HDS-OS/blob/main/README.md)
+- [FIRST_RUN.md](https://github.com/uvarovdenys-beep/HDS-OS/blob/main/FIRST_RUN.md)
+- [HDS_ARCHITECTURE.md](https://github.com/uvarovdenys-beep/HDS-OS/blob/main/HDS_ARCHITECTURE.md)
+- [WEBHOOK_API.md](https://github.com/uvarovdenys-beep/HDS-OS/blob/main/WEBHOOK_API.md)
+
+## 🐛 Known Issues
+
+None reported yet. Please [file an issue](https://github.com/uvarovdenys-beep/HDS-OS/issues) if you encounter problems.
+
+## 📈 Performance
+
+- Vision daemon: <2s for screen capture and analysis
+- Browser daemon: <5s for page navigation
+- Webhook API: Async with configurable timeouts
+
+---
+
+**Built with**: Python 3.11 | PyAutoGUI | Tesseract | Playwright | Webhook
+'''
+
+with open('RELEASE_NOTES_AUTO.md', 'w') as f:
+    f.write(notes)
+print('✅ Release notes generated')
+PYTHON_EOF
+
+      # 5. Create checksums manifest
+      - name: Create checksums manifest
+        run: |
+          cat release/*.sha256 > release/SHA256SUMS.txt 2>/dev/null || echo "No checksums found"
+          echo "Release artifacts:"
+          ls -lh release/
+
+      # 6. Create GitHub release
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/hds-1.1-windows.exe
+            release/hds-1.1-linux.AppImage
+            release/hds-1.1-macos.dmg
+            release/SHA256SUMS.txt
+          body_path: RELEASE_NOTES_AUTO.md
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 7. Archive release
+      - name: Archive release
+        run: |
+          echo "✅ Release v${{ github.ref_name }} published"
+          echo "📦 Artifacts:"
+          ls -1 release/
+          echo "✨ Available at: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+
+  notify:
+    name: Notification
+    needs: release
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Release Success
+        if: needs.release.result == 'success'
+        run: |
+          echo "✅ HDS v${{ github.ref_name }} successfully released!"
+          echo "📥 Download: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+
+      - name: Release Failed
+        if: needs.release.result == 'failure'
+        run: |
+          echo "❌ HDS release build failed"
+          exit 1

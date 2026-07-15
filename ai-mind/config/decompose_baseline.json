@@ -1,0 +1,23 @@
+{
+  "agent/agent.py": 730,
+  "agent/agent_ai_pipeline.py": 681,
+  "agent/aivc_controller.py": 736,
+  "agent/auto_decompose.py": 373,
+  "agent/build_certify.py": 483,
+  "agent/canary_tests.py": 302,
+  "agent/doc_daemon.py": 430,
+  "agent/model_router.py": 456,
+  "agent/protocol_diagnostic.py": 552,
+  "agent/protocol_enforcer.py": 446,
+  "agent/universal_ai_interface.py": 768,
+  "agent/vox_speech.py": 434,
+  "agent/web_search_daemon.py": 538,
+  "agent/webhook_server_enhanced.py": 401,
+  "scribe.py": 350,
+  "scripts/gate.py": 311,
+  "scripts/ops.py": 445,
+  "scripts/text.py": 302,
+  "tests/test_fuzzer.py": 305,
+  "tests/test_local_ai_protocol.py": 320,
+  "tests/test_v11_modules.py": 319
+}

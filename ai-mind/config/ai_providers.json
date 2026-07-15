@@ -1,0 +1,37 @@
+{
+  "providers": [
+    {
+      "provider_id": "openai_primary",
+      "framework": "openai",
+      "config": {
+        "api_key": "${OPENAI_API_KEY}",
+        "base_url": "https://api.openai.com/v1",
+        "default_model": "gpt-3.5-turbo"
+      },
+      "enabled": true
+    },
+    {
+      "provider_id": "local_fallback",
+      "framework": "local",
+      "config": {
+        "model_path": "./models/local_model",
+        "model_type": "transformer"
+      },
+      "enabled": true
+    }
+  ],
+  "priorities": {
+    "text_generation": [
+      "openai_primary",
+      "local_fallback"
+    ],
+    "code_generation": [
+      "openai_primary",
+      "local_fallback"
+    ],
+    "analysis": [
+      "openai_primary",
+      "local_fallback"
+    ]
+  }
+}

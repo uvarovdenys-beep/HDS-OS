@@ -1,0 +1,53 @@
+{
+  "model": "qwen3.5:4b",
+  "size": "M",
+  "score": 8,
+  "max_score": 18,
+  "protocol_file": "ai-mind/protocols/hds_m.md",
+  "timestamp": "2026-05-16 23:43:49",
+  "duration": 126.98869395256042,
+  "tests": [
+    {
+      "name": "Context Retention",
+      "score": 3,
+      "max": 3,
+      "reasoning": "Правило дотримано повністю — жодного 'ё'",
+      "duration": 37.349947929382324
+    },
+    {
+      "name": "Instruction Boundary",
+      "score": 0,
+      "max": 3,
+      "reasoning": "tax_rate не додано або неправильно",
+      "duration": 20.06737780570984
+    },
+    {
+      "name": "Structured Output",
+      "score": 3,
+      "max": 3,
+      "reasoning": "Чистий JSON, парситься, всі поля на місці",
+      "duration": 9.516140937805176
+    },
+    {
+      "name": "Self-Awareness",
+      "score": 1,
+      "max": 3,
+      "reasoning": "Часткова чесність",
+      "duration": 20.086337089538574
+    },
+    {
+      "name": "Multi-Step Planning",
+      "score": 0,
+      "max": 3,
+      "reasoning": "Не розуміє залежності або хоче міняти всі файли",
+      "duration": 20.033854246139526
+    },
+    {
+      "name": "Error Recovery",
+      "score": 1,
+      "max": 3,
+      "reasoning": "Неконкретна відповідь",
+      "duration": 19.934447050094604
+    }
+  ]
+}
