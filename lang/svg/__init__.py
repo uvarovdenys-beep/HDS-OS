@@ -1,0 +1,1 @@
+"""SVG language module."""

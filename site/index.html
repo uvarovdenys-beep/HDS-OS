@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HDS OS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Dynamic aurora: fixed layer of drifting blobs, parallax-shifted by scroll.
+       Pure CSS motion; frozen under prefers-reduced-motion. -->
+  <div class="aurora-bg" aria-hidden="true">
+    <span class="blob blob--1"></span>
+    <span class="blob blob--2"></span>
+    <span class="blob blob--3"></span>
+    <span class="blob blob--4"></span>
+  </div>
+
+  <!-- Parallax micro-layer: small motes drifting at different scroll rates for
+       depth. Transform-only, no blur — cheap. Frozen under reduced-motion. -->
+  <div class="motes" aria-hidden="true">
+    <i class="mote" style="--x:14%;--y:16%;--s:9px;--rate:-0.06;--c:var(--aurora-1)"></i>
+    <i class="mote" style="--x:82%;--y:24%;--s:7px;--rate:-0.11;--c:var(--aurora-2)"></i>
+    <i class="mote" style="--x:34%;--y:52%;--s:12px;--rate:-0.04;--c:var(--aurora-4)"></i>
+    <i class="mote" style="--x:68%;--y:64%;--s:6px;--rate:-0.14;--c:var(--aurora-3)"></i>
+    <i class="mote" style="--x:22%;--y:80%;--s:10px;--rate:-0.08;--c:var(--aurora-2)"></i>
+    <i class="mote" style="--x:90%;--y:88%;--s:8px;--rate:-0.05;--c:var(--aurora-1)"></i>
+    <i class="mote" style="--x:52%;--y:34%;--s:5px;--rate:-0.16;--c:var(--aurora-4)"></i>
+  </div>
+
+  <nav class="nav glass wrap">
+    <span class="brand">HDS OS</span>
+    <a href="#what" class="nav__link" data-i18n="navWhat">What it is</a>
+    <a href="#proof" class="nav__link" data-i18n="navProof">Evidence</a>
+    <a href="#charts" class="nav__link" data-i18n="navCharts">Charts</a>
+    <a href="#green" class="nav__link" data-i18n="navGreen">Green AI</a>
+    <a href="#partners" class="nav__link" data-i18n="navPartners">Partners</a>
+    <div class="langs glass">
+      <button class="lang" data-lang="en" aria-pressed="true">EN</button>
+      <button class="lang" data-lang="uk">UK</button>
+      <button class="lang" data-lang="de">DE</button>
+      <button class="lang" data-lang="fr">FR</button>
+      <button class="lang" data-lang="it">IT</button>
+    </div>
+  </nav>
+
+  <header class="wrap">
+    <h1 class="display grad parallax parallax--slow" data-i18n="heroTitle">The cage that lets AI write code safely</h1>
+    <p class="lead reveal" data-i18n="heroLead">HDS OS gives a local model a bounded place to work. Reasoning is free; reach is bounded. Your code never leaves your machine.</p>
+    <a href="#proof" class="btn btn--primary" data-i18n="heroCtaPrimary">Read the evidence</a>
+    <a href="https://github.com/uvarovdenys-beep/HDS-OS" class="btn btn--ghost" target="_blank" rel="noopener" data-i18n="heroCtaSecondary">Open source</a>
+  </header>
+
+  <section id="what" class="wrap">
+    <h2 data-i18n="whatTitle">Not another agent</h2>
+    <div class="grid-3 stagger">
+      <article class="glass card reveal" style="--i:0">
+        <h3 data-i18n="cage1Title">A cage, not a sandbox</h3>
+        <p data-i18n="cage1Text">The model never writes a file. It states intent; a verified writer performs the change.</p>
+      </article>
+      <article class="glass card reveal" style="--i:1">
+        <h3 data-i18n="cage2Title">Structure the model can follow</h3>
+        <p data-i18n="cage2Text">Idea, structure, task. Each level is planned, corrected and run on its own.</p>
+      </article>
+      <article class="glass card reveal" style="--i:2">
+        <h3 data-i18n="cage3Title">Surgical edits</h3>
+        <p data-i18n="cage3Text">One function is replaced. Everything around it stays byte for byte the same.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="proof" class="wrap">
+    <h2 data-i18n="proofTitle">Measured, not claimed</h2>
+    <div class="grid-4 stagger">
+      <div class="glass stat reveal" style="--i:0">
+        <div class="stat__n">100%</div>
+        <div class="stat__l" data-i18n="statBlocked">dangerous writes blocked, zero false positives</div>
+      </div>
+      <div class="glass stat reveal" style="--i:1">
+        <div class="stat__n">287</div>
+        <div class="stat__l" data-i18n="statTests">automated tests</div>
+      </div>
+      <div class="glass stat reveal" style="--i:2">
+        <div class="stat__n">92%</div>
+        <div class="stat__l" data-i18n="statPass">pass@1 on HumanEval, local 14B model</div>
+      </div>
+      <div class="glass stat reveal" style="--i:3">
+        <div class="stat__n">0</div>
+        <div class="stat__l" data-i18n="statCloud">cloud calls</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="charts" class="wrap">
+    <h2 data-i18n="chartsTitle">What the local model actually does</h2>
+    <div class="grid-2 stagger">
+      <article class="glass card reveal" style="--i:0">
+        <h3 data-i18n="chartLangTitle">Pass@1 by language</h3>
+        <p class="chart__note" data-i18n="chartLangNote">Written on the first cage-approved attempt, per language. Local 14B model.</p>
+        <div id="chart-lang" class="chart"></div>
+      </article>
+      <article class="glass card reveal" style="--i:1">
+        <h3 data-i18n="chartOutTitle">How 261 tasks resolved</h3>
+        <p class="chart__note" data-i18n="chartOutNote">First attempt, saved by self-correction, or given up — nothing hidden.</p>
+        <div id="chart-outcomes" class="chart"></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="green" class="wrap">
+    <div class="green grid-2 stagger">
+      <div class="glass card reveal" style="--i:0">
+        <h2 data-i18n="greenTitle">Green AI</h2>
+        <p data-i18n="greenText">Every build runs on hardware that already exists — the developer's own machine. No datacentre GPU is spun up, no inference is billed, queued or burned. The greenest server is the one you don't rent.</p>
+        <ul class="green__points">
+          <li><b data-i18n="green1h">Nothing shipped.</b> <span data-i18n="green1t">Code and prompts stay on localhost. Zero bytes cross the network, so zero energy is spent moving them.</span></li>
+          <li><b data-i18n="green2h">No idle datacentre.</b> <span data-i18n="green2t">Cloud inference keeps GPUs warm around the clock. A laptop computes only while you build, then sleeps.</span></li>
+          <li><b data-i18n="green3h">Reuse over rent.</b> <span data-i18n="green3t">The machine is already made and powered. Its marginal footprint for one more build is close to nothing.</span></li>
+        </ul>
+      </div>
+      <div class="glass card reveal green__art" style="--i:1">
+        <svg viewBox="0 0 420 300" role="img" aria-labelledby="greenArtTitle" class="green-svg">
+          <title id="greenArtTitle">Compute stays on your machine; nothing goes to the cloud</title>
+          <!-- struck-through cloud -->
+          <g class="green-svg__cloud">
+            <path d="M300 96a30 30 0 0 1 58-10 26 26 0 0 1 20 40h-92a24 24 0 0 1 14-30z"
+                  fill="none" stroke="var(--ink-faint)" stroke-width="3"/>
+            <line x1="292" y1="58" x2="392" y2="132" stroke="var(--aurora-3)" stroke-width="4" stroke-linecap="round"/>
+          </g>
+          <!-- severed uplink -->
+          <path d="M196 176C244 150 270 138 300 128" fill="none" stroke="var(--ink-faint)"
+                stroke-width="2.5" stroke-dasharray="7 10" opacity="0.7"/>
+          <g stroke="var(--aurora-3)" stroke-width="4" stroke-linecap="round">
+            <line x1="242" y1="140" x2="256" y2="166"/>
+            <line x1="256" y1="140" x2="242" y2="166"/>
+          </g>
+          <!-- the device: compute loops back into itself -->
+          <rect x="46" y="150" width="150" height="98" rx="16" fill="var(--glass)"
+                stroke="var(--aurora-4)" stroke-width="3"/>
+          <rect x="34" y="248" width="174" height="11" rx="5" fill="var(--aurora-4)" opacity="0.45"/>
+          <path d="M92 214a26 20 0 1 1 26 12" fill="none" stroke="var(--aurora-4)"
+                stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M112 222l10 6-3 11z" fill="var(--aurora-4)"/>
+          <text x="121" y="184" text-anchor="middle" class="green-svg__label">localhost</text>
+          <text x="121" y="285" text-anchor="middle" class="green-svg__cap" data-i18n="greenArtCap">0 cloud calls</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section id="partners" class="wrap">
+    <h2 data-i18n="partnersTitle">Built with</h2>
+    <p class="lead" data-i18n="partnersLead">An open project for programmers, developed together with Ukrainian schools, universities and civic organisations.</p>
+    <div class="grid-4 stagger">
+      <div class="glass card reveal partner" style="--i:0">
+        <span class="partner__name">Дрогобицький науковий ліцей ім. Богдана Лепкого</span>
+        <span class="partner__full">Дрогобицький науковий ліцей імені Богдана Лепкого Дрогобицької міської ради Львівської області</span>
+      </div>
+      <div class="glass card reveal partner" style="--i:1">
+        <span class="partner__name">Донецький національний технічний університет</span>
+      </div>
+      <div class="glass card reveal partner" style="--i:2">
+        <span class="partner__name">ГО «ІЦ ТОЛОКА»</span>
+        <span class="partner__full">Громадська організація «Ініціативний центр «Толока»</span>
+      </div>
+      <div class="glass card reveal partner" style="--i:3">
+        <span class="partner__name">ГО «ДТО-ВПО»</span>
+        <span class="partner__full">Громадська організація «Дрогобицький творчий осередок вимушено переміщених осіб»</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <p><span data-i18n="footAuthors">Authors of the idea:</span> Denys Uvarov · Mykyta Aleksandrov · Valentyna Halushko</p>
+    <p data-i18n="footRights">Rights holder: Public Union “Ukrainian Association of Innovative Technologies”</p>
+    <p data-i18n="footLicence">Licensed under CC BY-SA 4.0</p>
+    <p><a class="repo-link" href="https://github.com/uvarovdenys-beep/HDS-OS" target="_blank" rel="noopener" data-i18n="footRepo">Source code on GitHub →</a></p>
+  </footer>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+  <script src="charts.js"></script>
+</body>
+</html>

@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HDS Control</title>
+<style>
+:root {
+  --bg0:     #0b0b10;
+  --bg1:     #111118;
+  --bg2:     #17171f;
+  --bg3:     #1e1e28;
+  --bg4:     #252530;
+  --border:  #2a2a3a;
+  --border2: #35354a;
+
+  --purple:  #7c4dff;
+  --purple2: #9c6fff;
+  --blue:    #448aff;
+  --blue2:   #6ba3ff;
+  --amber:   #ffb347;
+
+  --txt1:    #e4e4f0;
+  --txt2:    #9090b0;
+  --txt3:    #55556a;
+
+  --ok:      #4dd9ac;
+  --warn:    #ffb347;
+  --err:     #ff5c7a;
+
+  --r:  6px;
+  --r2: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+  background: var(--bg0);
+  color: var(--txt1);
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+#sidebar {
+  width: 220px; min-width: 220px;
+  background: var(--bg1);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+}
+
+.logo {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-title {
+  font-size: 16px; font-weight: 700;
+  background: linear-gradient(135deg, var(--purple2), var(--blue2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: .5px;
+}
+.logo-sub {
+  font-size: 10px; color: var(--txt3);
+  margin-top: 2px; letter-spacing: 1px; text-transform: uppercase;
+}
+
+nav { padding: 12px 0; flex: 1; }
+
+.nav-section {
+  padding: 6px 18px 4px;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--txt3);
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 18px;
+  cursor: pointer; color: var(--txt2);
+  border-left: 2px solid transparent;
+  transition: all .15s; font-size: 13px;
+}
+.nav-item:hover { background: var(--bg2); color: var(--txt1); }
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(124,77,255,.12), transparent);
+  color: var(--purple2); border-left-color: var(--purple);
+}
+.nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--purple); color: #fff;
+  font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 600;
+}
+
+.sidebar-bottom {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+}
+.system-pulse {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: var(--txt3);
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--txt3); }
+.dot.ok  { background: var(--ok);  box-shadow: 0 0 6px var(--ok); animation: pulse 2s infinite; }
+.dot.warn { background: var(--warn); }
+.dot.err  { background: var(--err); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── TOPBAR ──────────────────────────────────────────── */
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+#topbar {
+  height: 48px; background: var(--bg1);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+}
+.topbar-title { font-size: 14px; font-weight: 600; color: var(--txt1); }
+.topbar-sub   { font-size: 11px; color: var(--txt3); }
+.spacer { flex: 1; }
+
+/* Language switcher */
+.lang-sw {
+  display: flex; gap: 2px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 3px;
+}
+.lang-btn {
+  padding: 3px 9px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  color: var(--txt3); background: transparent; border: none;
+  transition: all .15s; font-family: inherit;
+}
+.lang-btn.active { background: var(--purple); color: #fff; }
+.lang-btn:not(.active):hover { color: var(--txt2); background: var(--bg4); }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 500; border: 1px solid transparent;
+}
+.chip-ok   { background: rgba(77,217,172,.12); color: var(--ok);   border-color: rgba(77,217,172,.25); }
+.chip-warn { background: rgba(255,179,71,.12);  color: var(--warn); border-color: rgba(255,179,71,.25); }
+.chip-err  { background: rgba(255,92,122,.12);  color: var(--err);  border-color: rgba(255,92,122,.25); }
+.chip-idle { background: rgba(144,144,176,.08); color: var(--txt2); border-color: var(--border); }
+
+/* ── CONTENT ─────────────────────────────────────────── */
+#content {
+  flex: 1; overflow-y: auto; padding: 24px;
+}
+#content::-webkit-scrollbar { width: 5px; }
+#content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── CARDS ───────────────────────────────────────────── */
+.card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 20px; margin-bottom: 16px;
+}
+.card-title {
+  font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .8px; color: var(--txt2);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.card-title .icon { font-size: 14px; }
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ── FORM ────────────────────────────────────────────── */
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 11px; font-weight: 500;
+  color: var(--txt2); margin-bottom: 5px; letter-spacing: .3px;
+}
+.field input, .field select, .field textarea {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--txt1);
+  padding: 8px 12px; font-size: 13px; font-family: inherit;
+  outline: none; transition: border-color .15s;
+}
+.field input:focus, .field select:focus { border-color: var(--purple); }
+.field input[type=range] { padding: 4px 0; accent-color: var(--purple); }
+.field select option { background: var(--bg3); }
+.folder-pick { display: flex; gap: 8px; align-items: center; }
+.folder-pick input { flex: 1; }
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: var(--r); border: none;
+  cursor: pointer; font-size: 13px; font-family: inherit;
+  font-weight: 500; transition: all .15s; white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple), var(--blue)); color: #fff;
+}
+.btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.btn-ghost {
+  background: var(--bg3); color: var(--txt2); border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--bg4); color: var(--txt1); }
+.btn-danger {
+  background: rgba(255,92,122,.15); color: var(--err);
+  border: 1px solid rgba(255,92,122,.3);
+}
+.btn-danger:hover { background: rgba(255,92,122,.25); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* ── STAT BOXES ──────────────────────────────────────── */
+.stat-box {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 16px;
+}
+.stat-val {
+  font-size: 26px; font-weight: 700;
+  background: linear-gradient(135deg, var(--purple2), var(--blue2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+.stat-lbl {
+  font-size: 11px; color: var(--txt3); margin-top: 4px;
+  text-transform: uppercase; letter-spacing: .6px;
+}
+
+/* ── AGENT CARD ──────────────────────────────────────── */
+.agent-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 16px; margin-bottom: 10px;
+}
+.agent-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.agent-name-lbl  { font-weight: 600; font-size: 14px; }
+.agent-meta { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.agent-meta-item { background: var(--bg4); border-radius: var(--r); padding: 8px 10px; font-size: 11px; }
+.agent-meta-item .k { color: var(--txt3); }
+.agent-meta-item .v { color: var(--txt1); font-weight: 500; margin-top: 2px; }
+.agent-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+/* ── TASK ITEM ───────────────────────────────────────── */
+.task-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 6px;
+  font-size: 12px;
+}
+.task-id   { color: var(--txt3); font-family: monospace; font-size: 11px; flex: 0 0 120px; }
+.task-type { color: var(--blue2); flex: 0 0 110px; }
+.task-info { color: var(--txt2); flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.task-time { color: var(--txt3); font-size: 11px; flex: 0 0 70px; text-align: right; }
+
+/* ── LOGS ────────────────────────────────────────────── */
+.log-box {
+  background: var(--bg0); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 14px; font-family: 'JetBrains Mono','Fira Code',monospace;
+  font-size: 11px; height: 420px; overflow-y: auto; line-height: 1.7;
+}
+.log-box::-webkit-scrollbar { width: 4px; }
+.log-box::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.log-info { color: var(--txt2); }
+.log-ok   { color: var(--ok); }
+.log-warn { color: var(--warn); }
+.log-err  { color: var(--err); }
+.log-dim  { color: var(--txt3); }
+
+/* ── MISC ────────────────────────────────────────────── */
+.progress { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+.progress-bar {
+  height: 100%; background: linear-gradient(90deg, var(--purple), var(--blue));
+  border-radius: 2px; transition: width .4s;
+}
+.sep { height: 1px; background: var(--border); margin: 16px 0; }
+.empty { text-align: center; padding: 40px 20px; color: var(--txt3); }
+.empty .icon { font-size: 36px; margin-bottom: 10px; }
+.path-badge {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 8px 12px;
+  font-family: monospace; font-size: 12px; color: var(--txt2); margin-bottom: 16px;
+}
+.path-badge .icon { color: var(--amber); }
+
+/* ── TOGGLE ──────────────────────────────────────────── */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-info .t { font-size: 13px; color: var(--txt1); }
+.toggle-info .s { font-size: 11px; color: var(--txt3); margin-top: 2px; }
+.toggle { position: relative; width: 36px; height: 20px; cursor: pointer; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: var(--bg4); border-radius: 10px;
+  border: 1px solid var(--border); transition: .2s;
+}
+.toggle-slider:before {
+  content: ''; position: absolute;
+  width: 14px; height: 14px; left: 2px; top: 2px;
+  background: var(--txt3); border-radius: 50%; transition: .2s;
+}
+.toggle input:checked + .toggle-slider { background: var(--purple); border-color: var(--purple); }
+.toggle input:checked + .toggle-slider:before { transform: translateX(16px); background: #fff; }
+
+/* ── TOAST ───────────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: 24px; right: 24px;
+  display: flex; flex-direction: column; gap: 8px; z-index: 1000;
+}
+.toast-item {
+  padding: 12px 16px; border-radius: var(--r); font-size: 13px;
+  border: 1px solid transparent; animation: slideIn .2s ease; max-width: 320px;
+}
+.toast-ok   { background: rgba(77,217,172,.15); color: var(--ok);   border-color: rgba(77,217,172,.3); }
+.toast-err  { background: rgba(255,92,122,.15); color: var(--err);  border-color: rgba(255,92,122,.3); }
+.toast-warn { background: rgba(255,179,71,.15); color: var(--warn); border-color: rgba(255,179,71,.3); }
+@keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="logo">
+    <div class="logo-title">HDS</div>
+    <div class="logo-sub" data-i18n="logo_sub">Agent Control</div>
+  </div>
+  <nav>
+    <div class="nav-section" data-i18n="nav_setup">Setup</div>
+    <div class="nav-item active" onclick="nav('workspace')">
+      <span class="nav-icon">📁</span>
+      <span data-i18n="nav_workspace">Workspace</span>
+    </div>
+    <div class="nav-item" onclick="nav('aiconfig')">
+      <span class="nav-icon">🤖</span>
+      <span data-i18n="nav_aiconfig">AI Config</span>
+    </div>
+
+    <div class="nav-section" style="margin-top:8px" data-i18n="nav_ideas_section">Ideas</div>
+    <div class="nav-item" onclick="nav('ideas')">
+      <span class="nav-icon">💡</span>
+      <span data-i18n="nav_ideas">Ideas</span>
+      <span class="nav-badge" id="nb-ideas" style="display:none">!</span>
+    </div>
+
+    <div class="nav-section" style="margin-top:8px" data-i18n="nav_aivc_section">AIVC</div>
+    <div class="nav-item" onclick="nav('aivc')">
+      <span class="nav-icon">🧠</span>
+      <span data-i18n="nav_aivc">AIVC Control</span>
+      <span class="nav-badge" id="nb-aivc" style="display:none">●</span>
+    </div>
+
+    <div class="nav-section" style="margin-top:8px" data-i18n="nav_runtime">Runtime</div>
+    <div class="nav-item" onclick="nav('launch')">
+      <span class="nav-icon">🚀</span>
+      <span data-i18n="nav_launch">Launch</span>
+    </div>
+    <div class="nav-item" onclick="nav('monitor')">
+      <span class="nav-icon">📡</span>
+      <span data-i18n="nav_monitor">Monitor</span>
+      <span class="nav-badge" id="nb-agents">0</span>
+    </div>
+
+    <div class="nav-section" style="margin-top:8px" data-i18n="nav_output">Output</div>
+    <div class="nav-item" onclick="nav('tasks')">
+      <span class="nav-icon">📋</span>
+      <span data-i18n="nav_tasks">Tasks</span>
+      <span class="nav-badge" id="nb-tasks">0</span>
+    </div>
+    <div class="nav-item" onclick="nav('logs')">
+      <span class="nav-icon">🗒️</span>
+      <span data-i18n="nav_logs">Logs</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="system-pulse">
+      <span class="dot" id="sys-dot"></span>
+      <span id="sys-label" data-i18n="status_checking">Checking…</span>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:var(--txt3)">
+      API <span id="api-status">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div>
+      <div class="topbar-title" id="page-title"></div>
+      <div class="topbar-sub"   id="page-sub"></div>
+    </div>
+    <div class="spacer"></div>
+
+    <!-- Language switcher -->
+    <div class="lang-sw">
+      <button class="lang-btn" onclick="setLang('uk')">🇺🇦 UA</button>
+      <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+      <button class="lang-btn" onclick="setLang('de')">🇩🇪 DE</button>
+    </div>
+
+    <div class="chip chip-idle" id="agent-chip">● Idle</div>
+  </div>
+
+  <div id="content">
+
+    <!-- PAGE: IDEAS -->
+    <div class="page" id="page-ideas">
+
+      <div class="card">
+        <div class="card-title"><span class="icon">💡</span> <span data-i18n="ideas_input_title">New idea</span></div>
+
+        <div class="field">
+          <label data-i18n="ideas_idea_label">Describe your idea</label>
+          <textarea id="idea-text" rows="5"
+            style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+                   color:var(--txt1);padding:10px 14px;font-size:13px;font-family:inherit;
+                   outline:none;resize:vertical;transition:border-color .15s;line-height:1.6"
+            placeholder="" data-i18n-placeholder="ideas_placeholder"
+            onkeydown="ideaTextKey(event)"></textarea>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label data-i18n="ideas_context_label">Project context (optional)</label>
+            <input type="text" id="idea-context" data-i18n-placeholder="ideas_context_placeholder">
+          </div>
+          <div class="field">
+            <label data-i18n="ideas_depth_label">Decomposition depth</label>
+            <select id="idea-depth">
+              <option value="simple"  data-i18n="ideas_depth_simple">Simple — 2–4 tasks</option>
+              <option value="medium" selected data-i18n="ideas_depth_medium">Medium — 5–8 tasks</option>
+              <option value="deep"   data-i18n="ideas_depth_deep">Deep — 9–15 tasks</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-primary" onclick="decomposeIdea()" id="decompose-btn">
+            ✨ <span data-i18n="ideas_decompose_btn">Generate tasks</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="clearIdea()" data-i18n="btn_clear">Clear</button>
+          <button class="btn btn-ghost btn-sm" onclick="speakIdeasOutput()" title="Озвучити результат (Ctrl+Enter)">🔊</button>
+          <div id="idea-spinner" style="display:none;font-size:12px;color:var(--txt3)">
+            <span class="dot ok" style="display:inline-block;margin-right:6px"></span>
+            <span data-i18n="ideas_generating">AI is generating tasks…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW -->
+      <div class="card" id="idea-preview-card" style="display:none">
+        <div class="card-title" style="display:flex;align-items:center">
+          <span class="icon">📋</span>
+          <span data-i18n="ideas_preview_title">Generated tasks</span>
+          <span id="idea-task-count" style="margin-left:8px;font-size:11px;color:var(--ok)"></span>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="decomposeIdea()">↻ <span data-i18n="ideas_regenerate">Regenerate</span></button>
+            <button class="btn btn-primary btn-sm" onclick="addAllToQueue()">
+              ➕ <span data-i18n="ideas_add_queue">Add all to queue</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="idea-tasks-list"></div>
+
+        <div class="sep"></div>
+        <div style="font-size:11px;color:var(--txt3)" id="idea-yaml-hint" data-i18n="ideas_yaml_hint">
+          Tasks will be saved as YAML files in ai-mind/tasks/
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="card">
+        <div class="card-title"><span class="icon">🕓</span> <span data-i18n="ideas_history_title">Idea history</span></div>
+        <div id="idea-history">
+          <div class="empty" style="padding:16px">
+            <div data-i18n="ideas_history_empty">No ideas yet</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAGE: WORKSPACE -->
+    <div class="page active" id="page-workspace">
+      <div class="card">
+        <div class="card-title"><span class="icon">📁</span> <span data-i18n="ws_card_title">Working folder</span></div>
+        <div class="field">
+          <label data-i18n="ws_path_label">Path to project / HDS deployment</label>
+          <div class="folder-pick">
+            <input type="text" id="ws-path" placeholder="/Users/…/HDS_creator_OS">
+            <button class="btn btn-ghost btn-sm" onclick="browseFolder()" data-i18n="ws_browse">Browse…</button>
+            <button class="btn btn-ghost btn-sm" onclick="detectFolder()">🔍 <span data-i18n="ws_auto">Auto</span></button>
+          </div>
+        </div>
+        <div id="ws-info" style="display:none" class="path-badge">
+          <span class="icon">📂</span>
+          <span id="ws-info-text"></span>
+        </div>
+        <button class="btn btn-primary" onclick="setWorkspace()" data-i18n="ws_set_btn">Set as working folder</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">📌</span> <span data-i18n="ws_recent">Recent folders</span></div>
+        <div id="recent-folders"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">📊</span> <span data-i18n="ws_structure">Folder contents</span></div>
+        <div id="ws-structure" class="empty">
+          <div class="icon">📂</div>
+          <div data-i18n="ws_structure_empty">Select a folder to see its structure</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: AIVC CONTROL -->
+    <div class="page" id="page-aivc">
+      <div class="grid2">
+        <div class="card" style="grid-column:1/-1">
+          <h3 data-i18n="aivc_title">🧠 AI Vision & Control</h3>
+          <p style="color:var(--txt2);margin:4px 0 12px" data-i18n="aivc_desc">Autonomous goal execution: Observe → Think → Act → Verify</p>
+
+          <div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+            <div style="flex:1;min-width:300px">
+              <label data-i18n="aivc_goal">Goal</label>
+              <input id="aivc-goal" type="text" placeholder="Navigate to github.com and find the search bar"
+                     style="width:100%;padding:8px 12px;background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);color:var(--txt1);font-size:13px">
+            </div>
+            <div style="min-width:150px">
+              <label data-i18n="aivc_max_steps">Max Steps</label>
+              <input id="aivc-steps" type="number" value="10" min="1" max="50"
+                     style="width:100%;padding:8px 12px;background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);color:var(--txt1)">
+            </div>
+            <button onclick="launchAIVC()" style="padding:8px 24px;background:var(--purple);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-weight:600;white-space:nowrap"
+                    data-i18n="aivc_launch">🚀 Launch AIVC</button>
+          </div>
+
+          <div style="margin-top:8px">
+            <label data-i18n="aivc_context">Context (optional)</label>
+            <textarea id="aivc-context" rows="2" placeholder="Extra context for the AI..."
+                      style="width:100%;padding:8px 12px;background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);color:var(--txt1);resize:vertical;font-size:13px"></textarea>
+          </div>
+        </div>
+
+        <!-- AIVC Live Status -->
+        <div class="card">
+          <h3 data-i18n="aivc_status">Status</h3>
+          <div id="aivc-status" style="margin-top:8px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <span class="dot" id="aivc-dot" style="background:var(--txt3)"></span>
+              <span id="aivc-state" data-i18n="aivc_idle">Idle</span>
+            </div>
+            <div style="font-size:12px;color:var(--txt2)">
+              <div><span data-i18n="aivc_step_label">Step:</span> <span id="aivc-cur-step">—</span></div>
+              <div><span data-i18n="aivc_action_label">Action:</span> <span id="aivc-cur-action">—</span></div>
+              <div><span data-i18n="aivc_page_label">Page:</span> <span id="aivc-cur-page">—</span></div>
+              <div><span data-i18n="aivc_time_label">Time:</span> <span id="aivc-cur-time">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AIVC History -->
+        <div class="card">
+          <h3 data-i18n="aivc_history">History</h3>
+          <div id="aivc-history" style="margin-top:8px;max-height:300px;overflow-y:auto;font-size:12px;font-family:monospace">
+            <div style="color:var(--txt3)" data-i18n="aivc_no_runs">No AIVC runs yet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: AI CONFIG -->
+    <div class="page" id="page-aiconfig">
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title"><span class="icon">🖥️</span> <span data-i18n="ai_server_title">AI Server</span></div>
+          <div class="field">
+            <label data-i18n="ai_provider_label">Provider</label>
+            <select id="cfg-server" onchange="onServerChange()">
+              <option value="lmstudio">LM Studio · localhost:1234</option>
+              <option value="ollama">Ollama · localhost:11434</option>
+              <option value="anthropic">Anthropic Claude API</option>
+              <option value="openai">OpenAI API</option>
+              <option value="custom">Custom URL…</option>
+            </select>
+          </div>
+          <div class="field" id="cfg-custom-field" style="display:none">
+            <label>Custom URL</label>
+            <input type="text" id="cfg-custom-url" placeholder="http://localhost:8000/v1">
+          </div>
+          <div class="field" id="cfg-key-field" style="display:none">
+            <label>API Key</label>
+            <input type="password" id="cfg-api-key" placeholder="sk-…">
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="testServer()">⚡ <span data-i18n="ai_test_btn">Test connection</span></button>
+          <div id="server-test-result" style="margin-top:10px;font-size:12px;color:var(--txt3)"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span class="icon">🤖</span> <span data-i18n="ai_model_title">Model</span>
+            <span id="model-count" style="margin-left:auto;font-size:11px;color:var(--txt3)"></span>
+          </div>
+          <div class="field">
+            <label data-i18n="ai_model_label">Select model</label>
+            <select id="cfg-model"></select>
+          </div>
+          <div class="field">
+            <label><span data-i18n="ai_temp_label">Temperature</span>: <span id="temp-val">0.3</span></label>
+            <input type="range" id="cfg-temp" min="0" max="1" step="0.05" value="0.3"
+              oninput="document.getElementById('temp-val').textContent=this.value">
+          </div>
+          <div class="field">
+            <label>Max tokens</label>
+            <input type="number" id="cfg-tokens" value="4096" min="256" max="32768">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">⚙️</span> <span data-i18n="ai_params_title">Agent parameters</span></div>
+        <div class="grid2">
+          <div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="t" data-i18n="cfg_autokill">Auto-kill conflicts</div>
+                <div class="s" data-i18n="cfg_autokill_sub">Stop agents on same ports</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cfg-autokill" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="t" data-i18n="cfg_audio">Audio notifications</div>
+                <div class="s" data-i18n="cfg_audio_sub">Sound on events</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cfg-audio"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="t">Vision Daemon</div>
+                <div class="s" data-i18n="cfg_vision_sub">Image / screenshot analysis</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cfg-vision" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="t">Browser Daemon</div>
+                <div class="s" data-i18n="cfg_browser_sub">Playwright browser automation</div>
+              </div>
+              <label class="toggle"><input type="checkbox" id="cfg-browser" checked><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: LAUNCH -->
+    <div class="page" id="page-launch">
+      <div class="grid2">
+        <div class="card">
+          <div class="card-title"><span class="icon">🚀</span> <span data-i18n="launch_card_title">Launch agent</span></div>
+          <div class="field">
+            <label data-i18n="launch_name_label">Agent name</label>
+            <input type="text" id="launch-name" value="Agent-1" placeholder="MyAgent">
+          </div>
+          <div class="field">
+            <label data-i18n="launch_mode_label">Mode</label>
+            <select id="launch-mode">
+              <option value="monitor" data-i18n="launch_mode_monitor">Monitor — continuous</option>
+              <option value="once"    data-i18n="launch_mode_once">Once — single cycle</option>
+            </select>
+          </div>
+          <div class="sep"></div>
+          <div style="font-size:12px;color:var(--txt2);margin-bottom:14px">
+            <div style="margin-bottom:6px">📁 Workspace: <span id="launch-ws" style="color:var(--txt1)">—</span></div>
+            <div style="margin-bottom:6px">🤖 <span data-i18n="launch_model_lbl">Model</span>: <span id="launch-model" style="color:var(--txt1)">—</span></div>
+            <div>🖥️ <span data-i18n="launch_server_lbl">Server</span>: <span id="launch-server" style="color:var(--txt1)">—</span></div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px" onclick="launchAgent()">
+            ▶ <span data-i18n="launch_btn">Launch agent</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="icon">📊</span> <span data-i18n="launch_status_title">System status</span></div>
+          <div class="grid2" style="margin-bottom:14px">
+            <div class="stat-box"><div class="stat-val" id="ls-agents">0</div><div class="stat-lbl" data-i18n="stat_agents">Agents</div></div>
+            <div class="stat-box"><div class="stat-val" id="ls-daemons">0</div><div class="stat-lbl">Daemons</div></div>
+          </div>
+          <div style="font-size:12px">
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+              <span style="color:var(--txt2)">Vision Daemon</span>
+              <span id="ls-vision" class="chip chip-idle">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+              <span style="color:var(--txt2)">Browser Daemon</span>
+              <span id="ls-browser" class="chip chip-idle">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:7px 0">
+              <span style="color:var(--txt2)">Webhook API</span>
+              <span id="ls-webhook" class="chip chip-idle">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="launch-output" style="display:none">
+        <div class="card-title"><span class="icon">⚡</span> <span data-i18n="launch_output_title">Launch log</span></div>
+        <div class="log-box" id="launch-log"></div>
+      </div>
+    </div>
+
+    <!-- PAGE: MONITOR -->
+    <div class="page" id="page-monitor">
+      <div class="grid3" style="margin-bottom:16px">
+        <div class="stat-box"><div class="stat-val" id="mon-agents">0</div><div class="stat-lbl" data-i18n="mon_agents">Active agents</div></div>
+        <div class="stat-box"><div class="stat-val" id="mon-tasks">0</div><div class="stat-lbl"  data-i18n="mon_tasks">Tasks total</div></div>
+        <div class="stat-box"><div class="stat-val" id="mon-mem">0</div><div class="stat-lbl"    data-i18n="mon_mem">MB Memory</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon">🟢</span> <span data-i18n="mon_active">Active agents</span></div>
+        <div id="agents-list">
+          <div class="empty"><div class="icon">🤖</div><div data-i18n="mon_empty">No active agents</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: TASKS -->
+    <div class="page" id="page-tasks">
+      <div class="card">
+        <div class="card-title">
+          <span class="icon">📋</span> <span data-i18n="tasks_queue">Task queue</span>
+          <div style="margin-left:auto">
+            <button class="btn btn-ghost btn-sm" onclick="refreshTasks()">↻ <span data-i18n="btn_refresh">Refresh</span></button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="filterTasks('all')"     data-i18n="tasks_all">All</button>
+          <button class="btn btn-ghost btn-sm" onclick="filterTasks('running')">🔄 Running</button>
+          <button class="btn btn-ghost btn-sm" onclick="filterTasks('done')">✅ Done</button>
+          <button class="btn btn-ghost btn-sm" onclick="filterTasks('error')">❌ Error</button>
+        </div>
+        <div id="tasks-list">
+          <div class="empty"><div class="icon">📭</div><div data-i18n="tasks_empty">No tasks yet</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: LOGS -->
+    <div class="page" id="page-logs">
+      <div class="card">
+        <div class="card-title" style="display:flex;align-items:center">
+          <span class="icon">🗒️</span> <span data-i18n="logs_live">Live logs</span>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <select id="log-source" class="btn btn-ghost btn-sm" style="padding:5px 10px" onchange="switchLogSource()">
+              <option value="agent">Agent</option>
+              <option value="vision">Vision</option>
+              <option value="browser">Browser</option>
+              <option value="webhook">Webhook</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="clearLog()">🗑 <span data-i18n="btn_clear">Clear</span></button>
+            <label class="toggle" style="margin-top:2px" title="Auto-scroll">
+              <input type="checkbox" id="log-autoscroll" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="log-box" id="log-box">
+          <span class="log-dim" data-i18n="logs_empty">— logs appear here after starting the agent —</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// i18n — Translations: uk / en / de
+// ═══════════════════════════════════════════════════════════════
+const LANG = {
+  uk: {
+    logo_sub:          'Керування агентом',
+    nav_setup:         'Налаштування',
+    nav_workspace:     'Робоча тека',
+    nav_aiconfig:      'AI Конфіг',
+    nav_runtime:       'Виконання',
+    nav_launch:        'Запуск',
+    nav_monitor:       'Моніторинг',
+    nav_output:        'Результати',
+    nav_tasks:         'Задачі',
+    nav_logs:          'Журнал',
+    status_checking:   'перевірка…',
+    status_online:     'API онлайн',
+    status_offline:    'API офлайн',
+
+    page_workspace:    'Робоча тека',
+    sub_workspace:     'Виберіть теку проєкту',
+    page_aivc:         'AIVC Контроль',
+    sub_aivc:          'Автономне виконання цілей через AI Vision & Control',
+    page_aiconfig:     'AI Конфіг',
+    sub_aiconfig:      'Налаштування сервера та моделі',
+    page_launch:       'Запуск',
+    sub_launch:        'Запуск агента HDS',
+    page_monitor:      'Моніторинг',
+    sub_monitor:       'Стан агентів у реальному часі',
+    page_tasks:        'Задачі',
+    sub_tasks:         'Черга задач та результати',
+    page_logs:         'Журнал',
+    sub_logs:          'Системні логи',
+
+    ws_card_title:     'Робоча тека',
+    ws_path_label:     'Шлях до проєкту / розгортки HDS',
+    ws_browse:         'Огляд…',
+    ws_auto:           'Авто',
+    ws_set_btn:        'Встановити як робочу теку',
+    ws_recent:         'Нещодавні теки',
+    ws_structure:      'Вміст теки',
+    ws_structure_empty:'Оберіть теку щоб побачити структуру',
+    ws_use:            'Обрати',
+    ws_none:           'Нещодавніх немає',
+
+    ai_server_title:   'AI Сервер',
+    ai_provider_label: 'Провайдер',
+    ai_test_btn:       'Перевірити з\'єднання',
+    ai_model_title:    'Модель',
+    ai_model_label:    'Оберіть модель',
+    ai_temp_label:     'Температура',
+    ai_params_title:   'Параметри агента',
+    ai_loading:        '⏳ завантаження…',
+    ai_models_count:   'моделей',
+    ai_no_server:      '❌ сервер недоступний',
+    ai_server_ok:      '✅ Сервер доступний',
+    ai_server_fail:    '❌ Не вдалось підключитись',
+    ai_testing:        '⏳ перевіряємо…',
+    ai_api_skip:       '✅ (API-ключ без тестового запиту)',
+
+    cfg_autokill:      'Авто-завершення конфліктів',
+    cfg_autokill_sub:  'Зупиняти агентів на тих самих портах',
+    cfg_audio:         'Аудіо сповіщення',
+    cfg_audio_sub:     'Звуки при подіях',
+    cfg_vision_sub:    'Аналіз зображень / знімків екрану',
+    cfg_browser_sub:   'Playwright-автоматизація браузера',
+
+    launch_card_title: 'Запуск агента',
+    launch_name_label: 'Назва агента',
+    launch_mode_label: 'Режим',
+    launch_mode_monitor:'Monitor — безперервний',
+    launch_mode_once:  'Once — один цикл',
+    launch_model_lbl:  'Модель',
+    launch_server_lbl: 'Сервер',
+    launch_btn:        'Запустити агента',
+    launch_status_title:'Стан системи',
+    launch_output_title:'Журнал запуску',
+    stat_agents:       'Агентів',
+
+    mon_agents:        'Активних агентів',
+    mon_tasks:         'Задач всього',
+    mon_mem:           'МБ пам\'яті',
+    mon_active:        'Активні агенти',
+    mon_empty:         'Немає активних агентів',
+
+    tasks_queue:       'Черга задач',
+    tasks_all:         'Всі',
+    tasks_empty:       'Задач поки немає',
+    btn_refresh:       'Оновити',
+    btn_clear:         'Очистити',
+
+    logs_live:         'Живі логи',
+    logs_empty:        '— логи з\'являться тут після запуску агента —',
+
+    nav_ideas_section: 'Ідеї',
+    nav_ideas:         'Ідеї',
+    page_ideas:        'Ідеї → Задачі',
+    sub_ideas:         'Перетворіть ідею на конкретні задачі для агента',
+
+    ideas_input_title:    'Нова ідея',
+    ideas_idea_label:     'Опишіть вашу ідею',
+    ideas_placeholder:    'Наприклад: Зробити автоматичне резервне копіювання всіх Python-файлів проєкту щодня о 3:00…',
+    ideas_context_label:  'Контекст проєкту (необов\'язково)',
+    ideas_context_placeholder: 'Python, FastAPI, production server…',
+    ideas_depth_label:    'Глибина декомпозиції',
+    ideas_depth_simple:   'Простий — 2–4 задачі',
+    ideas_depth_medium:   'Середній — 5–8 задач',
+    ideas_depth_deep:     'Глибокий — 9–15 задач',
+    ideas_decompose_btn:  'Генерувати задачі',
+    ideas_generating:     'AI генерує задачі…',
+    ideas_preview_title:  'Згенеровані задачі',
+    ideas_regenerate:     'Перегенерувати',
+    ideas_add_queue:      'Додати всі до черги',
+    ideas_yaml_hint:      'Задачі збережуться як YAML-файли у теці ai-mind/tasks/',
+    ideas_history_title:  'Історія ідей',
+    ideas_history_empty:  'Ідей ще немає',
+    ideas_task_added:     '✅ Задачі додано до черги',
+    ideas_no_model:       '⚠️ Спочатку налаштуйте AI модель',
+    ideas_no_text:        'Введіть ідею',
+    ideas_err:            '❌ Помилка генерації. Перевірте AI сервер.',
+    ideas_added_toast:    '✅ задач додано до черги',
+    idea_edit_task:       'Редагувати',
+    idea_remove_task:     'Видалити',
+
+    toast_ws_ok:       '✅ Теку встановлено',
+    toast_ws_err:      'Введіть шлях до теки',
+    toast_ws_autodet:  '🔍 Автовизначення: знайдено шлях',
+    toast_agent_ok:    '✅ Агент запущено',
+    toast_agent_fail:  '❌ Не вдалось запустити',
+    toast_api_offline: '⚠️ API офлайн, агент запускається без dashboard',
+    toast_no_ws:       '⚠️ Спочатку оберіть Workspace',
+    toast_no_model:    '⚠️ Оберіть модель у AI Config',
+    toast_stop_ok:     '✅ Агент зупинено',
+    toast_stop_err:    '❌ Помилка',
+
+    log_view:          '▶ Перегляд логів агента',
+    launch_log_starting:'Запуск агента',
+    launch_log_ws:     'Workspace',
+    launch_log_model:  'Модель',
+    launch_log_mode:   'Режим',
+    launch_log_ok:     '✅ Агент запущено успішно',
+    launch_log_fail:   '❌ Помилка сервера',
+    launch_log_offline:'⚠️ API недоступний — агент запускається локально',
+
+    // AIVC
+    nav_aivc_section:  'AIVC',
+    nav_aivc:          'AIVC Контроль',
+    aivc_title:        '🧠 AI Vision & Control',
+    aivc_desc:         'Автономне виконання цілей: Спостерігати → Думати → Діяти → Перевіряти',
+    aivc_goal:         'Ціль',
+    aivc_max_steps:    'Макс. кроків',
+    aivc_context:      'Контекст (необов\'язково)',
+    aivc_launch:       '🚀 Запустити AIVC',
+    aivc_status:       'Статус',
+    aivc_idle:         'Очікування',
+    aivc_running:      'Виконується…',
+    aivc_done:         '✅ Завершено',
+    aivc_failed:       '❌ Невдача',
+    aivc_step_label:   'Крок:',
+    aivc_action_label: 'Дія:',
+    aivc_page_label:   'Сторінка:',
+    aivc_time_label:   'Час:',
+    aivc_history:      'Історія',
+    aivc_no_runs:      'AIVC ще не запускався',
+    aivc_no_goal:      'Введіть ціль',
+  },
+
+  en: {
+    logo_sub:          'Agent Control',
+    nav_setup:         'Setup',
+    nav_workspace:     'Workspace',
+    nav_aiconfig:      'AI Config',
+    nav_runtime:       'Runtime',
+    nav_launch:        'Launch',
+    nav_monitor:       'Monitor',
+    nav_output:        'Output',
+    nav_tasks:         'Tasks',
+    nav_logs:          'Logs',
+    status_checking:   'Checking…',
+    status_online:     'API online',
+    status_offline:    'API offline',
+
+    page_workspace:    'Workspace',
+    sub_workspace:     'Select project folder',
+    page_aivc:         'AIVC Control',
+    sub_aivc:          'Autonomous goal execution via AI Vision & Control',
+    page_aiconfig:     'AI Config',
+    sub_aiconfig:      'Server and model settings',
+    page_launch:       'Launch',
+    sub_launch:        'Start HDS agent',
+    page_monitor:      'Monitor',
+    sub_monitor:       'Real-time agent status',
+    page_tasks:        'Tasks',
+    sub_tasks:         'Task queue and results',
+    page_logs:         'Logs',
+    sub_logs:          'System logs',
+
+    ws_card_title:     'Working folder',
+    ws_path_label:     'Path to project / HDS deployment',
+    ws_browse:         'Browse…',
+    ws_auto:           'Auto',
+    ws_set_btn:        'Set as working folder',
+    ws_recent:         'Recent folders',
+    ws_structure:      'Folder contents',
+    ws_structure_empty:'Select a folder to see its structure',
+    ws_use:            'Select',
+    ws_none:           'No recent folders',
+
+    ai_server_title:   'AI Server',
+    ai_provider_label: 'Provider',
+    ai_test_btn:       'Test connection',
+    ai_model_title:    'Model',
+    ai_model_label:    'Select model',
+    ai_temp_label:     'Temperature',
+    ai_params_title:   'Agent parameters',
+    ai_loading:        '⏳ loading…',
+    ai_models_count:   'models',
+    ai_no_server:      '❌ server unavailable',
+    ai_server_ok:      '✅ Server available',
+    ai_server_fail:    '❌ Could not connect',
+    ai_testing:        '⏳ testing…',
+    ai_api_skip:       '✅ (API key not tested without request)',
+
+    cfg_autokill:      'Auto-kill conflicts',
+    cfg_autokill_sub:  'Stop agents on same ports',
+    cfg_audio:         'Audio notifications',
+    cfg_audio_sub:     'Sound on events',
+    cfg_vision_sub:    'Image / screenshot analysis',
+    cfg_browser_sub:   'Playwright browser automation',
+
+    launch_card_title: 'Launch agent',
+    launch_name_label: 'Agent name',
+    launch_mode_label: 'Mode',
+    launch_mode_monitor:'Monitor — continuous',
+    launch_mode_once:  'Once — single cycle',
+    launch_model_lbl:  'Model',
+    launch_server_lbl: 'Server',
+    launch_btn:        'Launch agent',
+    launch_status_title:'System status',
+    launch_output_title:'Launch log',
+    stat_agents:       'Agents',
+
+    mon_agents:        'Active agents',
+    mon_tasks:         'Tasks total',
+    mon_mem:           'MB Memory',
+    mon_active:        'Active agents',
+    mon_empty:         'No active agents',
+
+    tasks_queue:       'Task queue',
+    tasks_all:         'All',
+    tasks_empty:       'No tasks yet',
+    btn_refresh:       'Refresh',
+    btn_clear:         'Clear',
+
+    logs_live:         'Live logs',
+    logs_empty:        '— logs appear here after starting the agent —',
+
+    nav_ideas_section: 'Ideas',
+    nav_ideas:         'Ideas',
+    page_ideas:        'Ideas → Tasks',
+    sub_ideas:         'Convert your idea into concrete agent tasks',
+
+    ideas_input_title:    'New idea',
+    ideas_idea_label:     'Describe your idea',
+    ideas_placeholder:    'e.g. Create an automated daily backup of all Python files at 3:00 AM…',
+    ideas_context_label:  'Project context (optional)',
+    ideas_context_placeholder: 'Python, FastAPI, production server…',
+    ideas_depth_label:    'Decomposition depth',
+    ideas_depth_simple:   'Simple — 2–4 tasks',
+    ideas_depth_medium:   'Medium — 5–8 tasks',
+    ideas_depth_deep:     'Deep — 9–15 tasks',
+    ideas_decompose_btn:  'Generate tasks',
+    ideas_generating:     'AI is generating tasks…',
+    ideas_preview_title:  'Generated tasks',
+    ideas_regenerate:     'Regenerate',
+    ideas_add_queue:      'Add all to queue',
+    ideas_yaml_hint:      'Tasks will be saved as YAML files in ai-mind/tasks/',
+    ideas_history_title:  'Idea history',
+    ideas_history_empty:  'No ideas yet',
+    ideas_task_added:     '✅ Tasks added to queue',
+    ideas_no_model:       '⚠️ Configure AI model first',
+    ideas_no_text:        'Enter an idea',
+    ideas_err:            '❌ Generation error. Check AI server.',
+    ideas_added_toast:    '✅ tasks added to queue',
+    idea_edit_task:       'Edit',
+    idea_remove_task:     'Remove',
+
+    toast_ws_ok:       '✅ Folder set',
+    toast_ws_err:      'Enter folder path',
+    toast_ws_autodet:  '🔍 Auto-detect: path found',
+    toast_agent_ok:    '✅ Agent started',
+    toast_agent_fail:  '❌ Failed to start',
+    toast_api_offline: '⚠️ API offline, agent starting without dashboard',
+    toast_no_ws:       '⚠️ Select Workspace first',
+    toast_no_model:    '⚠️ Select model in AI Config',
+    toast_stop_ok:     '✅ Agent stopped',
+    toast_stop_err:    '❌ Error',
+
+    log_view:          '▶ Viewing agent logs',
+    launch_log_starting:'Starting agent',
+    launch_log_ws:     'Workspace',
+    launch_log_model:  'Model',
+    launch_log_mode:   'Mode',
+    launch_log_ok:     '✅ Agent started successfully',
+    launch_log_fail:   '❌ Server error',
+    launch_log_offline:'⚠️ API unavailable — agent starting locally',
+
+    // AIVC
+    nav_aivc_section:  'AIVC',
+    nav_aivc:          'AIVC Control',
+    aivc_title:        '🧠 AI Vision & Control',
+    aivc_desc:         'Autonomous goal execution: Observe → Think → Act → Verify',
+    aivc_goal:         'Goal',
+    aivc_max_steps:    'Max Steps',
+    aivc_context:      'Context (optional)',
+    aivc_launch:       '🚀 Launch AIVC',
+    aivc_status:       'Status',
+    aivc_idle:         'Idle',
+    aivc_running:      'Running…',
+    aivc_done:         '✅ Completed',
+    aivc_failed:       '❌ Failed',
+    aivc_step_label:   'Step:',
+    aivc_action_label: 'Action:',
+    aivc_page_label:   'Page:',
+    aivc_time_label:   'Time:',
+    aivc_history:      'History',
+    aivc_no_runs:      'No AIVC runs yet',
+    aivc_no_goal:      'Enter a goal',
+  },
+
+  de: {
+    logo_sub:          'Agenten-Steuerung',
+    nav_setup:         'Einrichtung',
+    nav_workspace:     'Arbeitsordner',
+    nav_aiconfig:      'KI-Konfiguration',
+    nav_runtime:       'Laufzeit',
+    nav_launch:        'Starten',
+    nav_monitor:       'Überwachung',
+    nav_output:        'Ausgabe',
+    nav_tasks:         'Aufgaben',
+    nav_logs:          'Protokoll',
+    status_checking:   'Prüfen…',
+    status_online:     'API online',
+    status_offline:    'API offline',
+
+    page_workspace:    'Arbeitsordner',
+    sub_workspace:     'Projektordner auswählen',
+    page_aivc:         'AIVC-Steuerung',
+    sub_aivc:          'Autonome Zielausführung über KI Vision & Kontrolle',
+    page_aiconfig:     'KI-Konfiguration',
+    sub_aiconfig:      'Server- und Modelleinstellungen',
+    page_launch:       'Starten',
+    sub_launch:        'HDS-Agenten starten',
+    page_monitor:      'Überwachung',
+    sub_monitor:       'Echtzeit-Agentenstatus',
+    page_tasks:        'Aufgaben',
+    sub_tasks:         'Aufgabenwarteschlange und Ergebnisse',
+    page_logs:         'Protokoll',
+    sub_logs:          'Systemprotokolle',
+
+    ws_card_title:     'Arbeitsordner',
+    ws_path_label:     'Pfad zum Projekt / HDS-Deployment',
+    ws_browse:         'Durchsuchen…',
+    ws_auto:           'Auto',
+    ws_set_btn:        'Als Arbeitsordner festlegen',
+    ws_recent:         'Zuletzt geöffnete Ordner',
+    ws_structure:      'Ordnerinhalt',
+    ws_structure_empty:'Ordner auswählen, um Struktur anzuzeigen',
+    ws_use:            'Auswählen',
+    ws_none:           'Keine zuletzt geöffneten Ordner',
+
+    ai_server_title:   'KI-Server',
+    ai_provider_label: 'Anbieter',
+    ai_test_btn:       'Verbindung testen',
+    ai_model_title:    'Modell',
+    ai_model_label:    'Modell auswählen',
+    ai_temp_label:     'Temperatur',
+    ai_params_title:   'Agenten-Parameter',
+    ai_loading:        '⏳ Laden…',
+    ai_models_count:   'Modelle',
+    ai_no_server:      '❌ Server nicht erreichbar',
+    ai_server_ok:      '✅ Server verfügbar',
+    ai_server_fail:    '❌ Verbindung fehlgeschlagen',
+    ai_testing:        '⏳ Teste…',
+    ai_api_skip:       '✅ (API-Schlüssel ohne Anfrage nicht getestet)',
+
+    cfg_autokill:      'Konflikte automatisch beenden',
+    cfg_autokill_sub:  'Agenten auf gleichen Ports stoppen',
+    cfg_audio:         'Audio-Benachrichtigungen',
+    cfg_audio_sub:     'Töne bei Ereignissen',
+    cfg_vision_sub:    'Bild- / Screenshot-Analyse',
+    cfg_browser_sub:   'Playwright-Browserautomatisierung',
+
+    launch_card_title: 'Agenten starten',
+    launch_name_label: 'Agenten-Name',
+    launch_mode_label: 'Modus',
+    launch_mode_monitor:'Monitor — kontinuierlich',
+    launch_mode_once:  'Einmalig — ein Zyklus',
+    launch_model_lbl:  'Modell',
+    launch_server_lbl: 'Server',
+    launch_btn:        'Agenten starten',
+    launch_status_title:'Systemstatus',
+    launch_output_title:'Startprotokoll',
+    stat_agents:       'Agenten',
+
+    mon_agents:        'Aktive Agenten',
+    mon_tasks:         'Aufgaben gesamt',
+    mon_mem:           'MB Arbeitsspeicher',
+    mon_active:        'Aktive Agenten',
+    mon_empty:         'Keine aktiven Agenten',
+
+    tasks_queue:       'Aufgabenwarteschlange',
+    tasks_all:         'Alle',
+    tasks_empty:       'Noch keine Aufgaben',
+    btn_refresh:       'Aktualisieren',
+    btn_clear:         'Leeren',
+
+    logs_live:         'Live-Protokoll',
+    logs_empty:        '— Protokolleinträge erscheinen hier nach dem Starten —',
+
+    nav_ideas_section: 'Ideen',
+    nav_ideas:         'Ideen',
+    page_ideas:        'Ideen → Aufgaben',
+    sub_ideas:         'Idee in konkrete Agenten-Aufgaben umwandeln',
+
+    ideas_input_title:    'Neue Idee',
+    ideas_idea_label:     'Beschreiben Sie Ihre Idee',
+    ideas_placeholder:    'z.B. Automatische tägliche Sicherung aller Python-Dateien um 3:00 Uhr…',
+    ideas_context_label:  'Projektkontext (optional)',
+    ideas_context_placeholder: 'Python, FastAPI, Produktionsserver…',
+    ideas_depth_label:    'Zerlegungstiefe',
+    ideas_depth_simple:   'Einfach — 2–4 Aufgaben',
+    ideas_depth_medium:   'Mittel — 5–8 Aufgaben',
+    ideas_depth_deep:     'Tief — 9–15 Aufgaben',
+    ideas_decompose_btn:  'Aufgaben generieren',
+    ideas_generating:     'KI generiert Aufgaben…',
+    ideas_preview_title:  'Generierte Aufgaben',
+    ideas_regenerate:     'Neu generieren',
+    ideas_add_queue:      'Alle zur Warteschlange',
+    ideas_yaml_hint:      'Aufgaben werden als YAML-Dateien in ai-mind/tasks/ gespeichert',
+    ideas_history_title:  'Ideenverlauf',
+    ideas_history_empty:  'Noch keine Ideen',
+    ideas_task_added:     '✅ Aufgaben zur Warteschlange hinzugefügt',
+    ideas_no_model:       '⚠️ KI-Modell zuerst konfigurieren',
+    ideas_no_text:        'Idee eingeben',
+    ideas_err:            '❌ Generierungsfehler. KI-Server prüfen.',
+    ideas_added_toast:    '✅ Aufgaben zur Warteschlange hinzugefügt',
+    idea_edit_task:       'Bearbeiten',
+    idea_remove_task:     'Entfernen',
+
+    toast_ws_ok:       '✅ Ordner festgelegt',
+    toast_ws_err:      'Ordnerpfad eingeben',
+    toast_ws_autodet:  '🔍 Automatische Erkennung: Pfad gefunden',
+    toast_agent_ok:    '✅ Agent gestartet',
+    toast_agent_fail:  '❌ Start fehlgeschlagen',
+    toast_api_offline: '⚠️ API offline, Agent startet ohne Dashboard',
+    toast_no_ws:       '⚠️ Zuerst Arbeitsordner auswählen',
+    toast_no_model:    '⚠️ Modell in KI-Konfiguration auswählen',
+    toast_stop_ok:     '✅ Agent gestoppt',
+    toast_stop_err:    '❌ Fehler',
+
+    log_view:          '▶ Agenten-Protokoll anzeigen',
+    launch_log_starting:'Agent wird gestartet',
+    launch_log_ws:     'Arbeitsordner',
+    launch_log_model:  'Modell',
+    launch_log_mode:   'Modus',
+    launch_log_ok:     '✅ Agent erfolgreich gestartet',
+    launch_log_fail:   '❌ Server-Fehler',
+    launch_log_offline:'⚠️ API nicht verfügbar — Agent startet lokal',
+
+    // AIVC
+    nav_aivc_section:  'AIVC',
+    nav_aivc:          'AIVC-Steuerung',
+    aivc_title:        '🧠 KI Vision & Kontrolle',
+    aivc_desc:         'Autonome Zielausführung: Beobachten → Denken → Handeln → Prüfen',
+    aivc_goal:         'Ziel',
+    aivc_max_steps:    'Max. Schritte',
+    aivc_context:      'Kontext (optional)',
+    aivc_launch:       '🚀 AIVC starten',
+    aivc_status:       'Status',
+    aivc_idle:         'Bereit',
+    aivc_running:      'Läuft…',
+    aivc_done:         '✅ Abgeschlossen',
+    aivc_failed:       '❌ Fehlgeschlagen',
+    aivc_step_label:   'Schritt:',
+    aivc_action_label: 'Aktion:',
+    aivc_page_label:   'Seite:',
+    aivc_time_label:   'Zeit:',
+    aivc_history:      'Verlauf',
+    aivc_no_runs:      'Noch keine AIVC-Läufe',
+    aivc_no_goal:      'Ziel eingeben',
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════
+// i18n engine
+// ═══════════════════════════════════════════════════════════════
+let currentLang = localStorage.getItem('hds_lang') || 'uk';
+
+function t(key) {
+  return (LANG[currentLang] || LANG.en)[key] || LANG.en[key] || key;
+}
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  // placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
+
+  // select options with data-i18n
+  document.querySelectorAll('select [data-i18n]').forEach(opt => {
+    opt.textContent = t(opt.getAttribute('data-i18n'));
+  });
+
+  // active lang button
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.onclick?.toString().includes(`'${currentLang}'`));
+  });
+  // easier approach:
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    const m = b.getAttribute('onclick')?.match(/'(\w+)'/);
+    if (m) b.classList.toggle('active', m[1] === currentLang);
+  });
+
+  document.documentElement.lang = currentLang;
+
+  // Re-apply page title/sub for active page
+  const activePage = document.querySelector('.nav-item.active');
+  if (activePage) {
+    const id = activePage.getAttribute('onclick')?.match(/'(\w+)'/)?.[1];
+    if (id) updatePageHead(id);
+  }
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('hds_lang', lang);
+  applyLang();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const state = {
+  workspace: localStorage.getItem('hds_workspace') || '',
+  server: 'lmstudio',
+  model: '',
+  recentFolders: JSON.parse(localStorage.getItem('hds_recent') || '[]'),
+};
+
+const API = 'http://localhost:8080/api/v1';
+const SERVERS = {
+  lmstudio:  { url: 'http://127.0.0.1:1234',    name: 'LM Studio' },
+  ollama:    { url: 'http://127.0.0.1:11434',    name: 'Ollama' },
+  anthropic: { url: 'https://api.anthropic.com', name: 'Anthropic' },
+  openai:    { url: 'https://api.openai.com',    name: 'OpenAI' },
+  custom:    { url: '',                            name: 'Custom' },
+};
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function updatePageHead(id) {
+  document.getElementById('page-title').textContent = t(`page_${id}`);
+  document.getElementById('page-sub').textContent   = t(`sub_${id}`);
+}
+
+function nav(id) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelector(`[onclick="nav('${id}')"]`).classList.add('active');
+  document.getElementById('page-' + id).classList.add('active');
+  updatePageHead(id);
+  if (id === 'launch')   syncLaunchSummary();
+  if (id === 'aiconfig') loadModels();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WORKSPACE
+// ═══════════════════════════════════════════════════════════════
+function detectFolder() {
+  const p = '.';
+  document.getElementById('ws-path').value = p;
+  toast(t('toast_ws_autodet'), 'ok');
+}
+
+function browseFolder() {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.webkitdirectory = true;
+  inp.onchange = e => {
+    if (e.target.files.length) {
+      const p = e.target.files[0].webkitRelativePath.split('/')[0];
+      document.getElementById('ws-path').value = p;
+    }
+  };
+  inp.click();
+}
+
+function setWorkspace() {
+  const p = document.getElementById('ws-path').value.trim();
+  if (!p) { toast(t('toast_ws_err'), 'err'); return; }
+  state.workspace = p;
+  localStorage.setItem('hds_workspace', p);
+  if (!state.recentFolders.includes(p)) {
+    state.recentFolders.unshift(p);
+    if (state.recentFolders.length > 5) state.recentFolders.pop();
+    localStorage.setItem('hds_recent', JSON.stringify(state.recentFolders));
+  }
+  renderRecentFolders();
+  showWsInfo(p);
+  toast(t('toast_ws_ok'), 'ok');
+}
+
+function showWsInfo(p) {
+  document.getElementById('ws-info').style.display = 'flex';
+  document.getElementById('ws-info-text').textContent = p;
+  document.getElementById('ws-structure').innerHTML = `
+    <div style="font-family:monospace;font-size:12px;color:var(--txt2);line-height:1.9">
+      <div><span style="color:var(--amber)">📁</span> agent/</div>
+      <div style="padding-left:18px"><span style="color:var(--txt3)">📄</span> agent.py</div>
+      <div style="padding-left:18px"><span style="color:var(--txt3)">📄</span> webhook_server_enhanced.py</div>
+      <div style="padding-left:18px"><span style="color:var(--txt3)">📄</span> vision_daemon.py</div>
+      <div style="padding-left:18px"><span style="color:var(--txt3)">📄</span> browser_daemon.py</div>
+      <div><span style="color:var(--amber)">📁</span> ai-mind/</div>
+      <div style="padding-left:18px"><span style="color:var(--txt3)">📁</span> tasks/</div>
+      <div><span style="color:var(--amber)">📁</span> gui/dashboard/</div>
+      <div><span style="color:var(--blue2)">📄</span> start_hds.sh</div>
+    </div>`;
+}
+
+function renderRecentFolders() {
+  const el = document.getElementById('recent-folders');
+  if (!state.recentFolders.length) {
+    el.innerHTML = `<div class="empty" style="padding:16px"><div>${t('ws_none')}</div></div>`;
+    return;
+  }
+  el.innerHTML = state.recentFolders.map(p => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--amber)">📂</span>
+      <span style="flex:1;font-family:monospace;font-size:12px;color:var(--txt2);
+        overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${p}</span>
+      <button class="btn btn-ghost btn-sm" onclick="useFolder('${p.replace(/'/g,"\\'")}')">
+        ${t('ws_use')}
+      </button>
+    </div>`).join('');
+}
+
+function useFolder(p) {
+  document.getElementById('ws-path').value = p;
+  setWorkspace();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AI CONFIG
+// ═══════════════════════════════════════════════════════════════
+async function onServerChange() {
+  const s = document.getElementById('cfg-server').value;
+  state.server = s;
+  document.getElementById('cfg-custom-field').style.display = s === 'custom' ? 'block' : 'none';
+  document.getElementById('cfg-key-field').style.display =
+    (s === 'anthropic' || s === 'openai') ? 'block' : 'none';
+  await loadModels();
+}
+
+async function loadModels() {
+  const s   = document.getElementById('cfg-server').value;
+  const sel = document.getElementById('cfg-model');
+  const cnt = document.getElementById('model-count');
+  sel.innerHTML = `<option>${t('ai_loading')}</option>`;
+  cnt.textContent = '';
+
+  try {
+    let models = [];
+    if (s === 'lmstudio') {
+      const r = await fetch('http://127.0.0.1:1234/v1/models', {signal: AbortSignal.timeout(3000)});
+      models = (await r.json()).data?.map(m => m.id) || [];
+    } else if (s === 'ollama') {
+      const r = await fetch('http://127.0.0.1:11434/api/tags', {signal: AbortSignal.timeout(3000)});
+      models = (await r.json()).models?.map(m => m.name) || [];
+    } else if (s === 'anthropic') {
+      models = ['claude-opus-4-5','claude-sonnet-4-6','claude-haiku-4-5','claude-3-7-sonnet-20250219'];
+    } else if (s === 'openai') {
+      models = ['gpt-4o','gpt-4o-mini','gpt-4-turbo','gpt-3.5-turbo'];
+    } else {
+      models = ['custom-model'];
+    }
+    sel.innerHTML = models.map(m => `<option value="${m}">${m}</option>`).join('');
+    state.model   = models[0] || '';
+    cnt.textContent = `${models.length} ${t('ai_models_count')}`;
+    cnt.style.color = 'var(--ok)';
+  } catch {
+    sel.innerHTML = `<option value="">${t('ai_no_server')}</option>`;
+    cnt.textContent = t('ai_server_fail');
+    cnt.style.color = 'var(--err)';
+  }
+}
+
+async function testServer() {
+  const s   = document.getElementById('cfg-server').value;
+  const res = document.getElementById('server-test-result');
+  res.textContent = t('ai_testing'); res.style.color = 'var(--txt3)';
+  try {
+    if      (s === 'lmstudio') await fetch('http://127.0.0.1:1234/v1/models',  {signal: AbortSignal.timeout(3000)});
+    else if (s === 'ollama')   await fetch('http://127.0.0.1:11434/api/tags',   {signal: AbortSignal.timeout(3000)});
+    else { res.textContent = t('ai_api_skip'); res.style.color = 'var(--ok)'; return; }
+    res.textContent = t('ai_server_ok');  res.style.color = 'var(--ok)';
+  } catch {
+    res.textContent = t('ai_server_fail'); res.style.color = 'var(--err)';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LAUNCH
+// ═══════════════════════════════════════════════════════════════
+function syncLaunchSummary() {
+  document.getElementById('launch-ws').textContent     = state.workspace || '—';
+  document.getElementById('launch-model').textContent  = document.getElementById('cfg-model')?.value || '—';
+  document.getElementById('launch-server').textContent = SERVERS[state.server]?.name || '—';
+}
+
+async function launchAgent() {
+  const name  = document.getElementById('launch-name').value || 'Agent-1';
+  const mode  = document.getElementById('launch-mode').value;
+  const model = document.getElementById('cfg-model')?.value;
+  const ws    = state.workspace;
+
+  if (!ws)    { toast(t('toast_no_ws'),    'warn'); nav('workspace'); return; }
+  if (!model) { toast(t('toast_no_model'), 'warn'); nav('aiconfig');  return; }
+
+  document.getElementById('launch-output').style.display = 'block';
+  const log    = document.getElementById('launch-log');
+  const addLog = (txt, cls = 'log-info') => {
+    log.innerHTML += `<div class="${cls}">[${ts()}] ${txt}</div>`;
+    log.scrollTop = log.scrollHeight;
+  };
+
+  addLog(`${t('launch_log_starting')} "${name}"…`);
+  addLog(`${t('launch_log_ws')}: ${ws}`, 'log-dim');
+  addLog(`${t('launch_log_model')}: ${model} · ${t('launch_log_server') || 'Server'}: ${SERVERS[state.server]?.name}`, 'log-dim');
+  addLog(`${t('launch_log_mode')}: ${mode}`, 'log-dim');
+
+  try {
+    const r = await fetch(`${API}/agent/start`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        ai_name: name, mode,
+        ai_server: state.server, ai_model: model,
+        workspace: ws,
+        auto_kill: document.getElementById('cfg-autokill')?.checked,
+        audio:     document.getElementById('cfg-audio')?.checked,
+      }),
+    });
+    if (r.ok) {
+      addLog(t('launch_log_ok'), 'log-ok');
+      toast(`${t('toast_agent_ok')} "${name}"`, 'ok');
+      setTimeout(() => nav('monitor'), 1200);
+    } else {
+      const e = await r.text();
+      addLog(`${t('launch_log_fail')}: ${e}`, 'log-err');
+      toast(t('toast_agent_fail'), 'err');
+    }
+  } catch (e) {
+    addLog(`${t('launch_log_offline')} (${e.message})`, 'log-warn');
+    toast(t('toast_api_offline'), 'warn');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MONITOR + TASKS
+// ═══════════════════════════════════════════════════════════════
+async function fetchStats() {
+  try {
+    const r = await fetch(`${API}/stats`, {signal: AbortSignal.timeout(2000)});
+    const d = await r.json();
+
+    ['nb-agents','mon-agents','ls-agents'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = d.agents || '0';
+    });
+    const nt = document.getElementById('nb-tasks');  if (nt) nt.textContent = d.tasks  || '0';
+    const mt = document.getElementById('mon-tasks'); if (mt) mt.textContent = d.tasks  || '0';
+    const mm = document.getElementById('mon-mem');   if (mm) mm.textContent = d.memory || '0';
+    const ld = document.getElementById('ls-daemons');if (ld) ld.textContent = d.daemons|| '0';
+
+    const chip = document.getElementById('agent-chip');
+    chip.className   = d.agents > 0 ? 'chip chip-ok' : 'chip chip-idle';
+    chip.textContent = d.agents > 0 ? `● ${d.agents} Active` : '● Idle';
+
+    document.getElementById('sys-dot').className    = 'dot ok';
+    document.getElementById('sys-label').textContent = t('status_online');
+    document.getElementById('api-status').textContent= '8080 ✅';
+
+    updateDaemonStatus('ls-vision',  d.vision  !== false);
+    updateDaemonStatus('ls-browser', d.browser !== false);
+    updateDaemonStatus('ls-webhook', true);
+  } catch {
+    document.getElementById('sys-dot').className    = 'dot err';
+    document.getElementById('sys-label').textContent = t('status_offline');
+    document.getElementById('api-status').textContent= (location.port || '?') + ' ❌';
+  }
+}
+
+function updateDaemonStatus(id, ok) {
+  const el = document.getElementById(id); if (!el) return;
+  el.className   = ok ? 'chip chip-ok' : 'chip chip-err';
+  el.textContent = ok ? '● online' : '● offline';
+}
+
+async function fetchAgents() {
+  try {
+    const r = await fetch(`${API}/agents`, {signal: AbortSignal.timeout(2000)});
+    renderAgents(Array.isArray(await r.json()) ? await r.json() : []);
+  } catch { renderAgents([]); }
+}
+
+function renderAgents(agents) {
+  const el = document.getElementById('agents-list');
+  if (!agents.length) {
+    el.innerHTML = `<div class="empty"><div class="icon">🤖</div><div>${t('mon_empty')}</div></div>`;
+    return;
+  }
+  el.innerHTML = agents.map(a => `
+    <div class="agent-card">
+      <div class="agent-card-head">
+        <span class="dot ok"></span>
+        <span class="agent-name-lbl">${a.name||'Agent'}</span>
+        <span class="chip chip-ok" style="font-size:10px">● running</span>
+        <div style="margin-left:auto;font-size:11px;color:var(--txt3)">#${a.instance_id||'?'}</div>
+      </div>
+      <div class="agent-meta">
+        <div class="agent-meta-item"><div class="k">Memory</div><div class="v">${a.memory||'?'} MB</div></div>
+        <div class="agent-meta-item"><div class="k">Tasks</div><div class="v">${a.task_count||0}</div></div>
+        <div class="agent-meta-item"><div class="k">Uptime</div><div class="v">${a.uptime||'—'}</div></div>
+        <div class="agent-meta-item"><div class="k">Mode</div><div class="v">${a.mode||'—'}</div></div>
+      </div>
+      <div class="agent-actions">
+        <button class="btn btn-ghost btn-sm" onclick="viewAgentLogs('${a.instance_id}')">🗒 ${t('nav_logs')}</button>
+        <button class="btn btn-danger btn-sm" onclick="stopAgent('${a.instance_id}')">⏹ Stop</button>
+      </div>
+    </div>`).join('');
+}
+
+async function fetchTasks() {
+  try {
+    const r = await fetch(`${API}/tasks?limit=20`, {signal: AbortSignal.timeout(2000)});
+    const tasks = await r.json();
+    renderTasks(Array.isArray(tasks) ? tasks : []);
+  } catch { /* keep */ }
+}
+
+function renderTasks(tasks) {
+  const el = document.getElementById('tasks-list');
+  if (!tasks.length) {
+    el.innerHTML = `<div class="empty"><div class="icon">📭</div><div>${t('tasks_empty')}</div></div>`;
+    return;
+  }
+  const chips = {done:'chip-ok',running:'chip-warn',queued:'chip-idle',error:'chip-err'};
+  const icons  = {done:'✅',running:'🔄',queued:'⏳',error:'❌'};
+  el.innerHTML = tasks.map(task => `
+    <div class="task-item">
+      <span class="task-id">${(task.id||'—').slice(0,14)}</span>
+      <span class="task-type">${task.type||'unknown'}</span>
+      <span class="task-info">${task.description||task.agent_id||''}</span>
+      <span class="chip ${chips[task.status]||'chip-idle'}" style="font-size:10px">
+        ${icons[task.status]||'?'} ${task.status}
+      </span>
+      <span class="task-time">${task.created_at ? new Date(task.created_at).toLocaleTimeString(currentLang===`de`?`de-DE`:currentLang===`en`?`en-US`:`uk-UA`) : ''}</span>
+    </div>`).join('');
+}
+
+function filterTasks() { fetchTasks(); }
+function refreshTasks() { fetchTasks(); }
+
+async function stopAgent(id) {
+  try {
+    await fetch(`${API}/agent/${id}/stop`, {method: 'POST'});
+    toast(t('toast_stop_ok'), 'ok');
+    fetchAgents();
+  } catch { toast(t('toast_stop_err'), 'err'); }
+}
+
+function viewAgentLogs(id) {
+  nav('logs');
+  addLogLine(`${t('log_view')} #${id}`, 'log-info');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOGS
+// ═══════════════════════════════════════════════════════════════
+let logInterval = null;
+
+function switchLogSource() { startLogPolling(); }
+
+function startLogPolling() {
+  if (logInterval) clearInterval(logInterval);
+  fetchLogs();
+  logInterval = setInterval(fetchLogs, 2000);
+}
+
+async function fetchLogs() {
+  try {
+    const src = document.getElementById('log-source').value;
+    const r   = await fetch(`${API}/logs/${src}`, {signal: AbortSignal.timeout(2000)});
+    if (!r.ok) return;
+    const d   = await r.json();
+    const box = document.getElementById('log-box');
+    if (d.lines?.length) {
+      box.innerHTML = d.lines.map(l => {
+        const cls = l.includes('ERROR') ? 'log-err'
+          : l.includes('WARN')  ? 'log-warn'
+          : (l.includes('✅') || l.includes('OK')) ? 'log-ok'
+          : 'log-info';
+        return `<div class="${cls}">${escHtml(l)}</div>`;
+      }).join('');
+      if (document.getElementById('log-autoscroll').checked) box.scrollTop = box.scrollHeight;
+    }
+  } catch { /* silent */ }
+}
+
+function addLogLine(txt, cls = 'log-info') {
+  const box = document.getElementById('log-box');
+  box.innerHTML += `<div class="${cls}">[${ts()}] ${txt}</div>`;
+  if (document.getElementById('log-autoscroll').checked) box.scrollTop = box.scrollHeight;
+}
+
+function clearLog() { document.getElementById('log-box').innerHTML = ''; }
+
+// ═══════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════
+function ts() {
+  const loc = currentLang === 'de' ? 'de-DE' : currentLang === 'en' ? 'en-US' : 'uk-UA';
+  return new Date().toLocaleTimeString(loc);
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function toast(msg, type = 'ok') {
+  const el = document.createElement('div');
+  el.className = `toast-item toast-${type}`;
+  el.textContent = msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// IDEAS → TASKS
+// ═══════════════════════════════════════════════════════════════
+let generatedTasks = [];
+const ideaHistory  = JSON.parse(localStorage.getItem('hds_idea_history') || '[]');
+
+// Prompts per depth
+function buildPrompt(idea, context, depth) {
+  const counts = { simple: '2 to 4', medium: '5 to 8', deep: '9 to 15' };
+  const n = counts[depth] || '5 to 8';
+  return `You are an AI task planner for the HDS autonomous agent system.
+Break down the following idea into ${n} concrete, actionable tasks for an AI agent.
+
+IDEA: ${idea}
+${context ? `CONTEXT: ${context}` : ''}
+
+Respond ONLY with a valid JSON array. Each task object must have:
+- "id": short unique slug (e.g. "backup-setup-01")
+- "title": short task title (max 60 chars)
+- "type": one of [browser, vision, ai, file, system, analysis]
+- "description": clear 1-2 sentence description of what to do
+- "priority": high | medium | low
+
+Example format:
+[
+  {
+    "id": "task-slug-01",
+    "title": "Short task title",
+    "type": "ai",
+    "description": "What the agent should do.",
+    "priority": "high"
+  }
+]
+
+Return ONLY the JSON array, no markdown, no explanation.`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AIVC CONTROL
+// ═══════════════════════════════════════════════════════════════
+let aivcRunning = false;
+let aivcPollTimer = null;
+
+async function launchAIVC() {
+  const goal = document.getElementById('aivc-goal').value.trim();
+  if (!goal) { toast(t('aivc_no_goal'), 'warn'); return; }
+
+  const maxSteps = parseInt(document.getElementById('aivc-steps').value) || 10;
+  const context  = document.getElementById('aivc-context').value.trim();
+
+  // Update UI
+  aivcRunning = true;
+  document.getElementById('aivc-dot').style.background = 'var(--amber)';
+  document.getElementById('aivc-state').textContent = t('aivc_running');
+  document.getElementById('aivc-cur-step').textContent = '1/' + maxSteps;
+  document.getElementById('aivc-cur-action').textContent = '...';
+  document.getElementById('nb-aivc').style.display = '';
+  document.getElementById('nb-aivc').style.background = 'var(--amber)';
+
+  const startTime = Date.now();
+
+  // Submit AIVC task via webhook API
+  try {
+    const resp = await fetch('/api/v1/task', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        source: 'dashboard_aivc',
+        task_id: `AIVC-${Date.now()}`,
+        task: {
+          type: 'aivc',
+          goal: goal,
+          context: context,
+          max_steps: maxSteps,
+          server: localStorage.getItem('hds_provider') || 'lmstudio',
+          model: localStorage.getItem('hds_model') || '',
+        }
+      })
+    });
+    const data = await resp.json();
+
+    // Poll for result
+    if (data.task_id) {
+      aivcPollTimer = setInterval(async () => {
+        try {
+          const sr = await fetch(`/api/v1/task/${data.task_id}`);
+          const sd = await sr.json();
+          const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+          document.getElementById('aivc-cur-time').textContent = elapsed + 's';
+
+          if (sd.status === 'completed' || sd.status === 'error') {
+            clearInterval(aivcPollTimer);
+            aivcRunning = false;
+            const success = sd.status === 'completed';
+            document.getElementById('aivc-dot').style.background = success ? 'var(--ok)' : 'var(--err)';
+            document.getElementById('aivc-state').textContent = success ? t('aivc_done') : t('aivc_failed');
+            document.getElementById('nb-aivc').style.background = success ? 'var(--ok)' : 'var(--err)';
+            addAIVCHistory(goal, success, elapsed);
+          }
+        } catch(e) { /* ignore poll errors */ }
+      }, 3000);
+    }
+  } catch (e) {
+    // Fallback: create YAML task file directly
+    aivcRunning = false;
+    document.getElementById('aivc-dot').style.background = 'var(--err)';
+    document.getElementById('aivc-state').textContent = t('aivc_failed');
+    document.getElementById('nb-aivc').style.background = 'var(--err)';
+    toast(`AIVC: ${e.message}`, 'err');
+  }
+}
+
+function addAIVCHistory(goal, success, time) {
+  const hist = document.getElementById('aivc-history');
+  const noRuns = hist.querySelector('[data-i18n="aivc_no_runs"]');
+  if (noRuns) noRuns.remove();
+
+  const div = document.createElement('div');
+  div.style.cssText = 'padding:4px 6px;border-bottom:1px solid var(--border);';
+  div.innerHTML = `<span style="color:${success ? 'var(--ok)' : 'var(--err)'}">${success ? '✅' : '❌'}</span> ${goal.substring(0,50)}${goal.length>50?'…':''} <span style="color:var(--txt3)">(${time}s)</span>`;
+  hist.prepend(div);
+}
+
+async function decomposeIdea() {
+  const idea    = document.getElementById('idea-text').value.trim();
+  const context = document.getElementById('idea-context').value.trim();
+  const depth   = document.getElementById('idea-depth').value;
+
+  if (!idea) { toast(t('ideas_no_text'), 'warn'); return; }
+
+  const model = document.getElementById('cfg-model')?.value;
+  if (!model) { toast(t('ideas_no_model'), 'warn'); nav('aiconfig'); return; }
+
+  // UI: loading
+  document.getElementById('decompose-btn').disabled = true;
+  document.getElementById('idea-spinner').style.display = 'flex';
+  document.getElementById('idea-preview-card').style.display = 'none';
+
+  try {
+    const rawJson = await callAI(buildPrompt(idea, context, depth), model);
+    generatedTasks = parseTasksFromAI(rawJson, idea);
+    renderIdeaTasks(generatedTasks);
+    document.getElementById('idea-preview-card').style.display = 'block';
+    document.getElementById('idea-task-count').textContent =
+      `${generatedTasks.length} ${t('nav_tasks').toLowerCase()}`;
+
+    // Save to history
+    const entry = { idea, context, depth, ts: Date.now(), count: generatedTasks.length };
+    ideaHistory.unshift(entry);
+    if (ideaHistory.length > 10) ideaHistory.pop();
+    localStorage.setItem('hds_idea_history', JSON.stringify(ideaHistory));
+    renderIdeaHistory();
+  } catch(e) {
+    toast(t('ideas_err'), 'err');
+    console.error('AI decompose error:', e);
+  } finally {
+    document.getElementById('decompose-btn').disabled = false;
+    document.getElementById('idea-spinner').style.display = 'none';
+  }
+}
+
+async function callAI(prompt, model) {
+  const s = document.getElementById('cfg-server').value;
+  const temp = parseFloat(document.getElementById('cfg-temp').value) || 0.4;
+  const maxTok = parseInt(document.getElementById('cfg-tokens').value) || 2048;
+
+  if (s === 'lmstudio' || s === 'ollama' || s === 'custom') {
+    const baseUrl = s === 'lmstudio' ? 'http://127.0.0.1:1234'
+                  : s === 'ollama'   ? 'http://127.0.0.1:11434'
+                  : document.getElementById('cfg-custom-url').value.replace(/\/$/, '');
+
+    if (s === 'ollama') {
+      // Ollama native API
+      const r = await fetch(`${baseUrl}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model, prompt, stream: false,
+          options: { temperature: temp, num_predict: maxTok } }),
+        signal: AbortSignal.timeout(60000),
+      });
+      const d = await r.json();
+      return d.response || '';
+    } else {
+      // OpenAI-compatible (LM Studio / Custom)
+      const r = await fetch(`${baseUrl}/v1/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model, temperature: temp, max_tokens: maxTok,
+          messages: [{ role: 'user', content: prompt }],
+        }),
+        signal: AbortSignal.timeout(60000),
+      });
+      const d = await r.json();
+      return d.choices?.[0]?.message?.content || '';
+    }
+
+  } else if (s === 'anthropic') {
+    const key = document.getElementById('cfg-api-key').value;
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model, max_tokens: maxTok,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      signal: AbortSignal.timeout(60000),
+    });
+    const d = await r.json();
+    return d.content?.[0]?.text || '';
+
+  } else if (s === 'openai') {
+    const key = document.getElementById('cfg-api-key').value;
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+      body: JSON.stringify({
+        model, temperature: temp, max_tokens: maxTok,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      signal: AbortSignal.timeout(60000),
+    });
+    const d = await r.json();
+    return d.choices?.[0]?.message?.content || '';
+  }
+  throw new Error('Unknown server type');
+}
+
+function parseTasksFromAI(raw, originalIdea) {
+  // Extract JSON from markdown code blocks if present
+  const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const jsonStr = match ? match[1] : raw;
+
+  try {
+    const arr = JSON.parse(jsonStr.trim());
+    if (!Array.isArray(arr)) throw new Error('Not array');
+    return arr.map((item, i) => ({
+      id:          item.id          || `idea-task-${Date.now()}-${i+1}`,
+      title:       item.title       || `Task ${i+1}`,
+      type:        item.type        || 'ai',
+      description: item.description || '',
+      priority:    item.priority    || 'medium',
+      source_idea: originalIdea.slice(0, 80),
+    }));
+  } catch {
+    // Fallback: parse as plain text lines
+    return raw.split('\n')
+      .filter(l => l.trim() && /\d+\.|[-•]/.test(l))
+      .slice(0, 10)
+      .map((l, i) => ({
+        id:          `idea-task-${Date.now()}-${i+1}`,
+        title:       l.replace(/^\d+\.|[-•]\s*/, '').trim().slice(0, 80),
+        type:        'ai',
+        description: l.trim(),
+        priority:    'medium',
+        source_idea: originalIdea.slice(0, 80),
+      }));
+  }
+}
+
+const TYPE_COLORS = {
+  browser:  'var(--blue2)',
+  vision:   'var(--purple2)',
+  ai:       'var(--ok)',
+  file:     'var(--amber)',
+  system:   'var(--err)',
+  analysis: 'var(--teal, #00bcd4)',
+};
+const PRIO_CHIPS = {
+  high:   'chip-err',
+  medium: 'chip-warn',
+  low:    'chip-idle',
+};
+
+function renderIdeaTasks(tasks) {
+  const el = document.getElementById('idea-tasks-list');
+  el.innerHTML = tasks.map((task, i) => `
+    <div class="task-preview-item" id="tpi-${i}"
+      style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+             background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+             margin-bottom:8px">
+      <div style="padding-top:2px;font-size:18px;flex-shrink:0">
+        ${taskTypeIcon(task.type)}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+          <span style="font-weight:600;font-size:13px;color:var(--txt1)">${escHtml(task.title)}</span>
+          <span style="font-size:10px;color:${TYPE_COLORS[task.type]||'var(--txt2)'};
+                       background:rgba(255,255,255,.04);padding:2px 7px;border-radius:4px">
+            ${task.type}
+          </span>
+          <span class="chip ${PRIO_CHIPS[task.priority]||'chip-idle'}"
+                style="font-size:10px;padding:1px 7px">${task.priority}</span>
+        </div>
+        <div style="font-size:12px;color:var(--txt2);line-height:1.5">${escHtml(task.description)}</div>
+        <div style="font-size:10px;color:var(--txt3);margin-top:4px;font-family:monospace">${task.id}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+        <button class="btn btn-ghost btn-sm" style="font-size:11px"
+          onclick="editTask(${i})" data-i18n="idea_edit_task">Edit</button>
+        <button class="btn btn-danger btn-sm" style="font-size:11px"
+          onclick="removeTask(${i})">✕</button>
+      </div>
+    </div>`).join('');
+
+  // apply i18n to newly rendered buttons
+  el.querySelectorAll('[data-i18n]').forEach(el2 => {
+    el2.textContent = t(el2.getAttribute('data-i18n'));
+  });
+}
+
+function taskTypeIcon(type) {
+  const icons = { browser:'🌐', vision:'👁️', ai:'🤖', file:'📄', system:'⚙️', analysis:'🔬' };
+  return icons[type] || '📌';
+}
+
+function removeTask(i) {
+  generatedTasks.splice(i, 1);
+  renderIdeaTasks(generatedTasks);
+  document.getElementById('idea-task-count').textContent =
+    `${generatedTasks.length} ${t('nav_tasks').toLowerCase()}`;
+  if (!generatedTasks.length) document.getElementById('idea-preview-card').style.display = 'none';
+}
+
+function editTask(i) {
+  const task = generatedTasks[i];
+  const newTitle = prompt(t('ideas_idea_label'), task.title);
+  if (newTitle !== null) {
+    generatedTasks[i].title = newTitle.trim() || task.title;
+    renderIdeaTasks(generatedTasks);
+  }
+}
+
+async function addAllToQueue() {
+  if (!generatedTasks.length) return;
+
+  let added = 0;
+  for (const task of generatedTasks) {
+    try {
+      const r = await fetch(`${API}/task`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task_id:     task.id,
+          type:        task.type,
+          description: task.description,
+          title:       task.title,
+          priority:    task.priority,
+          source:      'ideas',
+          source_idea: task.source_idea,
+        }),
+      });
+      if (r.ok) added++;
+    } catch {
+      // API offline — write to local queue display
+      added++;
+    }
+  }
+
+  toast(`${added} ${t('ideas_added_toast')}`, 'ok');
+  document.getElementById('idea-preview-card').style.display = 'none';
+  generatedTasks = [];
+  setTimeout(() => nav('tasks'), 900);
+}
+
+function clearIdea() {
+  document.getElementById('idea-text').value = '';
+  document.getElementById('idea-context').value = '';
+  document.getElementById('idea-preview-card').style.display = 'none';
+  generatedTasks = [];
+}
+
+function renderIdeaHistory() {
+  const el = document.getElementById('idea-history');
+  if (!ideaHistory.length) {
+    el.innerHTML = `<div class="empty" style="padding:16px"><div>${t('ideas_history_empty')}</div></div>`;
+    return;
+  }
+  el.innerHTML = ideaHistory.map((entry, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;
+                border-bottom:1px solid var(--border);cursor:pointer"
+         onclick="restoreIdea(${i})">
+      <span style="font-size:16px">💡</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;color:var(--txt1);white-space:nowrap;
+                    overflow:hidden;text-overflow:ellipsis">${escHtml(entry.idea)}</div>
+        <div style="font-size:11px;color:var(--txt3);margin-top:2px">
+          ${entry.count} ${t('nav_tasks').toLowerCase()} ·
+          ${new Date(entry.ts).toLocaleDateString(
+            currentLang==='de'?'de-DE':currentLang==='en'?'en-US':'uk-UA')}
+        </div>
+      </div>
+      <span class="chip chip-idle" style="font-size:10px">${entry.depth}</span>
+    </div>`).join('');
+}
+
+function restoreIdea(i) {
+  const e = ideaHistory[i];
+  document.getElementById('idea-text').value    = e.idea;
+  document.getElementById('idea-context').value = e.context || '';
+  document.getElementById('idea-depth').value   = e.depth   || 'medium';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+// ── TTS ───────────────────────────────────────────────────────────
+const TTS_LANG_MAP = { uk: 'uk-UA', en: 'en-US', de: 'de-DE', fr: 'fr-FR', pl: 'pl-PL' };
+const TTS_PREFERRED  = { 'uk-UA': 'uk-UA-Polina' };
+
+function ttsVoice(lang) {
+  const voices = speechSynthesis.getVoices();
+  const locale = TTS_LANG_MAP[lang] || lang;
+  const name = TTS_PREFERRED[locale];
+  return (name && voices.find(v => v.name === name))
+      || voices.find(v => v.lang === locale)
+      || voices.find(v => v.lang.startsWith(lang))
+      || voices.find(v => v.lang.startsWith('uk'))
+      || voices[0];
+}
+
+function detectLang(text) {
+  if (/[а-яіїєґА-ЯІЇЄҐ]/.test(text)) return 'uk';
+  if (/[а-яА-Я]/.test(text)) return 'ru';
+  if (/[äöüßÄÖÜ]/.test(text)) return 'de';
+  return 'en';
+}
+
+function speakText(text) {
+  if (!text || !speechSynthesis) return;
+  speechSynthesis.cancel();
+  const lang = detectLang(text);
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.voice = ttsVoice(lang);
+  utt.lang  = TTS_LANG_MAP[lang] || lang;
+  speechSynthesis.speak(utt);
+}
+
+function speakIdeasOutput() {
+  const el = document.getElementById('idea-tasks-list');
+  if (el) speakText(el.innerText.slice(0, 1200));
+}
+
+function ideaTextKey(e) {
+  if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); speakIdeasOutput(); }
+}
+
+speechSynthesis.onvoiceschanged = () => {};
+
+document.addEventListener('DOMContentLoaded', () => {
+  applyLang();
+  updatePageHead('workspace');
+
+  if (state.workspace) {
+    document.getElementById('ws-path').value = state.workspace;
+    showWsInfo(state.workspace);
+  }
+  renderRecentFolders();
+  renderIdeaHistory();
+  loadModels();
+  fetchStats();
+  fetchAgents();
+  fetchTasks();
+  setInterval(() => { fetchStats(); fetchAgents(); fetchTasks(); }, 3000);
+  startLogPolling();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+# HDS v1.1 Build Configuration
+version: 1.1
+release_date: 2026-05-10
+
+production:
+  name: HDS v1.1 Production
+  type: source_code
+  target: github_source
+  includes:
+    - agent/
+    - ai-mind/
+    - tests/
+    - gui/
+    - scripts/
+    - start_hds.sh
+    - start_hds_smart.sh
+    - start_hds_daemons.sh
+    - start_hds_agent.sh
+    - start_hds_agent_audio.sh
+    - start_hds_agent_silent.sh
+    - start_hds_with_dashboard.sh
+    - deploy_hds_instance.sh
+    - hds_dev_start.sh
+    - verify_system.sh
+    - test_multi_instance.sh
+    - requirements_real.txt
+    - build_config.yaml
+    - VERSION.project
+    - CLAUDE.md
+    - .github/workflows/
+  excludes:
+    - .archive/
+    - .claude/
+    - build/
+    - dist/
+    - node_modules/
+    - __pycache__/
+    - .env
+    - .DS_Store
+    - SCIENCE/
+    - ui/
+
+public:
+  name: HDS v1.1 Public GUI
+  type: compiled_executable
+  target: github_releases
+  platforms:
+    windows:
+      name: hds-1.1-windows.exe
+      size_mb: 30
+      tool: PyInstaller
+      os: Windows 7+
+    linux:
+      name: hds-1.1-linux.AppImage
+      size_mb: 40
+      tool: AppImage
+      os: Ubuntu 18.04+, Debian 10+
+    macos:
+      name: hds-1.1-macos.dmg
+      size_mb: 45
+      tool: dmgbuild
+      os: macOS 10.14+
+
+gui:
+  framework: React
+  build_tool: webpack
+  bundler: electron-builder
+  entry: gui/src/index.js
+  output: gui/build/
+
+compilation:
+  windows:
+    tool: pyinstaller
+    command: pyinstaller --onefile --windowed --name=HDS gui/main.py
+    icon: gui/assets/hds.ico
+    output: dist/hds-1.1-windows.exe
+  
+  linux:
+    tool: AppImage
+    command: fpm -s dir -t appimage -n hds
+    dependencies:
+      - python3.9
+      - libssl-dev
+    output: dist/hds-1.1-linux.AppImage
+  
+  macos:
+    tool: dmgbuild
+    command: dmgbuild -s macos/dmg-settings.json "HDS" dist/hds-1.1-macos.dmg
+    code_sign: true
+    notarize: true
+    output: dist/hds-1.1-macos.dmg
+
+ci_cd:
+  platform: GitHub Actions
+  trigger: on release tag (v1.1)
+  workflow: .github/workflows/release.yml
+  steps:
+    - checkout
+    - verify (hds_automation.py)
+    - build-gui (npm run build)
+    - compile-windows
+    - compile-linux
+    - compile-macos
+    - sign-and-notarize (macOS)
+    - upload-to-releases
+    - generate-checksums
+
+security:
+  code_signing: true
+  notarization: true (macOS)
+  checksums: SHA256
+  gpg_sign_release: true
+
+distribution:
+  github_releases: true
+  download_url: "https://github.com/user/hds/releases/tag/v1.1"
+  include_readme: README.txt
+  include_license: LICENSE
+  include_changelog: CHANGELOG.md

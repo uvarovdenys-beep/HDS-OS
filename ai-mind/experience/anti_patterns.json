@@ -1,0 +1,14 @@
+{
+  "anti_patterns": [
+    {
+      "task_id": "tel-report",
+      "timestamp": 1785645443.8623319,
+      "error": "Your code did not satisfy the declared checks:\nstage_report([{'stage':'cage','verdict':'start'}]) == {}  ->  evaluated false\nFix the logic so every check holds. Keep the signature.",
+      "ai_self_analysis": "Corrected after 2 attempts",
+      "derived_rule": "Your code did not satisfy the declared checks:",
+      "severity": "MEDIUM",
+      "symbol": "./telemetry.py::stage_report"
+    }
+  ],
+  "lessons_learned": 1
+}

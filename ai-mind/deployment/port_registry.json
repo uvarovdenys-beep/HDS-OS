@@ -1,0 +1,42 @@
+{
+  "hds_1779048947_hds_cli": {
+    "instance_id": "hds_1779048947_hds_cli",
+    "deploying_ai": "hds_cli",
+    "vision_daemon_port": 9001,
+    "browser_daemon_port": 9002,
+    "webhook_port": 8080,
+    "created_at": 1779048947.9146292,
+    "status": "allocated",
+    "pid": 1755
+  },
+  "hds_1779048971_test": {
+    "instance_id": "hds_1779048971_test",
+    "deploying_ai": "test",
+    "vision_daemon_port": 9011,
+    "browser_daemon_port": 9012,
+    "webhook_port": 8090,
+    "created_at": 1779048971.35584,
+    "status": "allocated",
+    "pid": 1844
+  },
+  "hds_1782422055_unknown": {
+    "instance_id": "hds_1782422055_unknown",
+    "deploying_ai": "unknown",
+    "vision_daemon_port": 9021,
+    "browser_daemon_port": 9022,
+    "webhook_port": 8100,
+    "created_at": 1782422055.113046,
+    "status": "allocated",
+    "pid": 30095
+  },
+  "hds_1782827993_hds_cli": {
+    "instance_id": "hds_1782827993_hds_cli",
+    "deploying_ai": "hds_cli",
+    "vision_daemon_port": 9031,
+    "browser_daemon_port": 9032,
+    "webhook_port": 8110,
+    "created_at": 1782827993.242454,
+    "status": "allocated",
+    "pid": 33538
+  }
+}

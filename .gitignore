@@ -1,0 +1,46 @@
+# HDS OS — ignore runtime artifacts, keep source + config skeleton
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# JS deps (reinstall, never commit)
+gui/node_modules/
+
+# runtime data (per-instance, not source)
+*.log
+logs/
+storage/*
+!storage/.gitkeep
+tasks/*
+!tasks/.gitkeep
+# Runtime task data — every queue directory, not just two of them. The list
+# was partial (results/ and queue/ only), so 249 completed-task records were
+# staged for commit as if they were source. What the agent DID is a log; what
+# it BUILT lives in storage/ and product/.
+ai-mind/tasks/results/*
+ai-mind/tasks/queue/*
+ai-mind/tasks/completed/*
+ai-mind/tasks/failed/*
+ai-mind/tasks/active/*
+ai-mind/tasks/generated/*
+ai-mind/tasks/background/*
+ai-mind/tasks/captures/*
+ai-mind/tasks/browser_state/*
+**/tasks/completed/*
+**/tasks/failed/*
+**/tasks/active/*
+# Plans ARE source: they record intent and the operator edits them by hand.
+!ai-mind/tasks/trees/
+# runtime task data anywhere (nested ai-mind under agent/, etc.)
+**/tasks/results/*
+**/tasks/queue/*
+
+# secrets — never commit, anywhere
+**/api_key
+ai-mind/config/api_key
+# Git credentials follow the same rule as the API key: the value lives in
+# ai-mind/config/ and never enters the repository. Project settings record only
+# that a token EXISTS, never the token itself.
+**/github_token
+ai-mind/config/github_token
